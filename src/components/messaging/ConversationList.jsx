@@ -30,7 +30,7 @@ export default function ConversationList({ conversations, users, currentUser, se
   const handleStartDM = async () => {
     if (!dmUserId || creating) return;
     setCreating(true);
-    const existing = directs.find(d => 
+    const existing = directs.find(d =>
       d.members.length === 2 && d.members.includes(dmUserId) && d.members.includes(currentUser.id)
     );
     if (existing) {
@@ -54,17 +54,20 @@ export default function ConversationList({ conversations, users, currentUser, se
   const otherUsers = users.filter(u => u.id !== currentUser.id);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border">
-        <h2 className="font-heading font-extrabold text-base text-foreground">Messages</h2>
+    <div className="flex flex-col h-full bg-[#4D2D52]">
+      <div className="p-4 border-b border-[#5a3660]">
+        <h2 className="font-heading font-extrabold text-base text-white">Messages</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 overflow-y-auto py-3">
         {/* Channels */}
-        <div className="px-3 mb-1">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-1">Channels</span>
-            <button onClick={() => setShowNew('channel')} className="text-muted-foreground hover:text-foreground transition-colors">
+        <div className="px-3 mb-4">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <div className="flex items-center gap-1.5">
+              <Hash className="w-3.5 h-3.5 text-[#DBCBDD]" />
+              <span className="text-[11px] font-bold text-[#DBCBDD] uppercase tracking-wider">Channels</span>
+            </div>
+            <button onClick={() => setShowNew('channel')} className="text-[#DBCBDD] hover:text-white transition-colors">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -72,21 +75,26 @@ export default function ConversationList({ conversations, users, currentUser, se
             <button
               key={c.id}
               onClick={() => onSelect(c.id)}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-left transition-colors ${
-                selectedId === c.id ? 'bg-accent/15 text-accent font-semibold' : 'text-foreground/70 hover:bg-muted'
+              className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-left transition-all ${
+                selectedId === c.id
+                  ? 'bg-[#F4EFF5] text-[#2C152E] font-semibold'
+                  : 'text-[#DBCBDD] hover:text-white hover:bg-white/5'
               }`}
             >
-              <Hash className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">{c.name}</span>
+              <Hash className={`w-4 h-4 flex-shrink-0 ${selectedId === c.id ? 'text-[#2C152E]' : ''}`} />
+              <span className="truncate lowercase">{c.name}</span>
             </button>
           ))}
         </div>
 
         {/* Direct Messages */}
-        <div className="px-3 mt-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-1">Direct Messages</span>
-            <button onClick={() => setShowNew('dm')} className="text-muted-foreground hover:text-foreground transition-colors">
+        <div className="px-3">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <div className="flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-[#DBCBDD]" />
+              <span className="text-[11px] font-bold text-[#DBCBDD] uppercase tracking-wider">Direct Messages</span>
+            </div>
+            <button onClick={() => setShowNew('dm')} className="text-[#DBCBDD] hover:text-white transition-colors">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -97,12 +105,14 @@ export default function ConversationList({ conversations, users, currentUser, se
               <button
                 key={c.id}
                 onClick={() => onSelect(c.id)}
-                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm text-left transition-colors ${
-                  selectedId === c.id ? 'bg-accent/15 text-accent font-semibold' : 'text-foreground/70 hover:bg-muted'
+                className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-left transition-all ${
+                  selectedId === c.id
+                    ? 'bg-[#F4EFF5] text-[#2C152E] font-semibold'
+                    : 'text-[#DBCBDD] hover:text-white hover:bg-white/5'
                 }`}
               >
-                <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                  <Lock className="w-3 h-3 text-muted-foreground" />
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${selectedId === c.id ? 'bg-[#4D2D52]' : 'bg-white/10'}`}>
+                  <Lock className={`w-2.5 h-2.5 ${selectedId === c.id ? 'text-[#F4EFF5]' : 'text-[#DBCBDD]'}`} />
                 </div>
                 <span className="truncate">{otherUser?.full_name || 'Unknown'}</span>
               </button>
