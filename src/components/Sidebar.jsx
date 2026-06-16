@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Clients', path: '/clients', icon: Building2 },
   { label: 'Leads', path: '/leads', icon: Target },
   { label: 'Team Meetings', path: '/team-meetings', icon: Users },
+  { label: 'Messages', path: '/messages', icon: MessageSquare },
 ];
 
 export default function Sidebar() {

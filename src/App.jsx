@@ -22,6 +22,7 @@ import Leads from '@/pages/Leads';
 import LeadDetail from '@/pages/LeadDetail';
 import TeamMeetings from '@/pages/TeamMeetings';
 import Settings from '@/pages/Settings';
+import Messages from '@/pages/Messages';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
           <Route path="/leads" element={<Leads />} />
           <Route path="/leads/:id" element={<LeadDetail />} />
           <Route path="/team-meetings" element={<TeamMeetings />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>

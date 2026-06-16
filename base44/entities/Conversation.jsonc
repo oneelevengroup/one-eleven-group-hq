@@ -1,0 +1,29 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "channel",
+        "direct"
+      ]
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "members"
+  ]
+}
