@@ -57,7 +57,7 @@ export default function TrafficControl() {
 
   const getClient = (id) => clients.find(c => c.id === id);
 
-  const activeLeads = leads.filter(l => l.status !== 'Won' && l.status !== 'Lost');
+  const activeLeads = leads.filter(l => l.status !== 'Contract Sent' && l.status !== 'Cold');
   const statusCounts = activeLeads.reduce((acc, l) => {
     acc[l.status] = (acc[l.status] || 0) + 1;
     return acc;
