@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Plus, Users, Target, CalendarDays } from 'lucide-react';
+import { Plus, Users, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskForm from '@/components/tasks/TaskForm';
 import LeadCard from '@/components/leads/LeadCard';
@@ -67,8 +67,11 @@ export default function TrafficControl() {
         <BrainDump onTasksCreated={loadData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="mb-8">
         <TodayAtAGlance tasks={tasks} user={user} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-card rounded-xl border border-border p-5">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
           <div className="space-y-2">
