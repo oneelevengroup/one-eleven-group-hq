@@ -161,14 +161,11 @@ export default function TrafficControl() {
 
           <div className="bg-card rounded-xl border border-border p-5">
             <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {users.map(u => (
-                <div key={u.id} className="flex items-center justify-between">
-                  <span className="text-sm text-foreground">{u.full_name}</span>
-                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${workload[u.id] > 5 ? 'bg-red-500/10 text-red-400' : workload[u.id] > 2 ? 'bg-amber-500/10 text-amber-400' : 'bg-accent/10 text-accent'}`}>
-                    {workload[u.id] || 0} open
-                  </span>
-                </div>
+                <p key={u.id} className="text-sm text-muted-foreground">
+                  <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
+                </p>
               ))}
             </div>
           </div>
