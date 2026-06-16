@@ -7,6 +7,7 @@ import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
 import LeadCard from '@/components/leads/LeadCard';
+import BrainDump from '@/components/BrainDump';
 import { Button } from '@/components/ui/button';
 
 export default function TrafficControl() {
@@ -153,6 +154,8 @@ export default function TrafficControl() {
             )}
             <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
           </div>
+
+          <BrainDump onTasksCreated={loadData} />
 
           <div className="bg-card rounded-xl border border-border p-5">
             <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>
