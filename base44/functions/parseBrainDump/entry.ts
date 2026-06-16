@@ -6,18 +6,20 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { text } = await req.json();
-    if (!text || !text.trim()) {
-      return Response.json({ error: 'No text provided' }, { status: 400 });
+    const { text, image_url } = await req.json();
+    if ((!text || !text.trim()) && !image_url) {
+      return Response.json({ error: 'No text or image provided' }, { status: 400 });
     }
 
     // Get existing clients for matching
     const clients = await base44.entities.Client.list();
     const clientNames = clients.map(c => c.name);
 
+    const hasImage = !!image_url;
+
     // Parse tasks using LLM
     const parsed = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a task parser for a marketing agency workspace. Parse the following brain dump into actionable tasks.
+      prompt: `You are a task parser for a marketing agency workspace. ${hasImage ? 'The user uploaded a photo of their handwritten to-do list. Read the handwriting from the image and convert it into actionable tasks.' : 'Parse the following brain dump into actionable tasks.'}
 
 Available clients: ${JSON.stringify(clientNames)}
 
@@ -32,10 +34,10 @@ Rules:
 - Break multi-step items into separate tasks
 - If someone says "call X" or "email X", that's a task
 - Be specific and actionable
-- Default priority is "Medium" unless urgency is clear
+- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task' : ''}
 
-Brain dump:
-"${text}"`,
+${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
+      file_urls: hasImage ? [image_url] : undefined,
       response_json_schema: {
         type: 'object',
         properties: {

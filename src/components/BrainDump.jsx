@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Rabbit, Loader2, Sparkles } from 'lucide-react';
+import { Rabbit, Loader2, Sparkles, Image, X } from 'lucide-react';
 
 export default function BrainDump({ onTasksCreated }) {
   const [text, setText] = useState('');
+  const [imageUrl, setImageUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleImagePick = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const res = await base44.integrations.Core.UploadFile({ file });
+    setImageUrl(res.file_url);
+    setUploading(false);
+    e.target.value = '';
+  };
 
   const handleSubmit = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() && !imageUrl) return;
     setProcessing(true);
     setResult(null);
     try {
-      const res = await base44.functions.invoke('parseBrainDump', { text });
+      const res = await base44.functions.invoke('parseBrainDump', { text, image_url: imageUrl });
       setResult(res.data);
     } catch (e) {
       setResult({ error: 'Something went wrong. Try again.' });
@@ -23,6 +36,7 @@ export default function BrainDump({ onTasksCreated }) {
 
   const handleDone = () => {
     setText('');
+    setImageUrl(null);
     setResult(null);
     if (onTasksCreated) onTasksCreated();
   };
@@ -48,9 +62,47 @@ export default function BrainDump({ onTasksCreated }) {
             placeholder="e.g. Call Sarah at Jet Set Pilates about the website redesign by Friday, follow up with Bloom about their social media content, review the SEO report for The Well by end of week..."
             className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-accent/50 mb-3"
           />
+
+          {imageUrl ? (
+            <div className="relative mb-3">
+              <img src={imageUrl} alt="Uploaded" className="w-full max-h-48 object-contain rounded-lg border border-border" />
+              <button
+                onClick={() => setImageUrl(null)}
+                className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 mb-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImagePick}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="border-border text-muted-foreground hover:text-foreground text-xs"
+              >
+                {uploading ? (
+                  <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Uploading...</>
+                ) : (
+                  <><Image className="w-3.5 h-3.5 mr-1.5" /> Upload Photo</>
+                )}
+              </Button>
+              <span className="text-[11px] text-muted-foreground">Upload a photo of your handwritten to-do list</span>
+            </div>
+          )}
+
           <Button
             onClick={handleSubmit}
-            disabled={processing || !text.trim()}
+            disabled={processing || (!text.trim() && !imageUrl)}
             className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold w-full"
           >
             {processing ? (
