@@ -31,13 +31,11 @@ export default function LeadCard({ lead, owner, isDragging, onStatusChange }) {
 
   return (
     <div onClick={() => navigate(`/leads/${lead.id}`)} className={`block bg-card rounded-lg p-3 border transition-colors cursor-pointer ${isDragging ? 'border-accent shadow-lg' : 'border-border hover:border-accent/50'}`}>
-      <div className="flex items-center justify-between mb-1">
-        <h4 className="font-heading font-bold text-sm text-foreground truncate flex-1">{lead.company_name}</h4>
-        <button onClick={handleStatusClick} className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ml-2 hover:opacity-80 transition-opacity ${STATUS_COLORS[lead.status]}`}>
-          {lead.status}
-        </button>
-      </div>
-      {lead.contact_name && <p className="text-xs text-muted-foreground mb-2 truncate">{lead.contact_name}</p>}
+      <h4 className="font-heading font-bold text-sm text-foreground leading-snug">{lead.company_name}</h4>
+      <button onClick={handleStatusClick} className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full inline-block mt-1 mb-1 hover:opacity-80 transition-opacity ${STATUS_COLORS[lead.status]}`}>
+        {lead.status}
+      </button>
+      {lead.contact_name && <p className="text-xs text-muted-foreground mb-2 leading-snug">{lead.contact_name}</p>}
       <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
         {owner && <span className="flex items-center gap-1"><User className="w-3 h-3" /> {owner.full_name}</span>}
         {lead.next_followup_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(lead.next_followup_date).toLocaleDateString()}</span>}
