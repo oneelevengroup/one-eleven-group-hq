@@ -82,11 +82,7 @@ export default function TrafficControl() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          {Object.keys(groupedByClient).length === 0 ? (
-            <div className="bg-card rounded-xl border border-border p-12 text-center">
-              <p className="text-muted-foreground">No tasks yet. Create one to get started!</p>
-            </div>
-          ) : (
+          {Object.keys(groupedByClient).length === 0 ? null : (
             Object.entries(groupedByClient).map(([clientId, clientTasks]) => {
               const client = getClient(clientId);
               return (
