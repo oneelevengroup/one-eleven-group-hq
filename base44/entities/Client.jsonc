@@ -8,6 +8,32 @@
     "contact_info": {
       "type": "string"
     },
+    "point_of_contact": {
+      "type": "string"
+    },
+    "support_staff": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "scope_of_work": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Website Design + Development",
+          "Social Media Management",
+          "SEO/AEO",
+          "Content Creation",
+          "Digital Ads",
+          "Brand Design + Development",
+          "A-La-Carte Project"
+        ]
+      },
+      "default": []
+    },
     "notes": {
       "type": "string"
     },

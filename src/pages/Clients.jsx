@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ClientForm from '@/components/clients/ClientForm';
@@ -8,17 +8,20 @@ import ClientForm from '@/components/clients/ClientForm';
 export default function Clients() {
   const [clients, setClients] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
 
   const loadData = async () => {
-    const [clientList, taskList] = await Promise.all([
+    const [clientList, taskList, userList] = await Promise.all([
       base44.entities.Client.list(),
       base44.entities.Task.list(),
+      base44.entities.User.list(),
     ]);
     setClients(clientList);
     setTasks(taskList);
+    setUsers(userList);
     setLoading(false);
   };
 
@@ -72,7 +75,7 @@ export default function Clients() {
         </div>
       )}
 
-      {showForm && <ClientForm client={editingClient} onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); loadData(); }} />}
+      {showForm && <ClientForm client={editingClient} users={users} onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); loadData(); }} />}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, User, Users, Briefcase, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
@@ -38,6 +38,7 @@ export default function ClientDetail() {
   useEffect(() => { loadData(); }, [id]);
 
   const getClientObj = (cid) => clients.find(c => c.id === cid);
+  const getStaffNames = (staffIds) => (staffIds || []).map(sid => users.find(u => u.id === sid)?.full_name || sid).filter(Boolean);
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -52,6 +53,8 @@ export default function ClientDetail() {
     </div>
   );
 
+  const staffNames = getStaffNames(client.support_staff);
+
   return (
     <div>
       <div className="flex items-center gap-4 mb-8">
@@ -61,14 +64,64 @@ export default function ClientDetail() {
             {client.color_tag && <span className="w-4 h-4 rounded-full" style={{backgroundColor: client.color_tag}} />}
             <h1 className="text-3xl font-heading font-extrabold text-foreground">{client.name}</h1>
           </div>
-          {client.contact_info && <p className="text-muted-foreground mt-1">{client.contact_info}</p>}
         </div>
         <Button variant="outline" onClick={() => setShowEditClient(true)} className="border-border">Edit</Button>
         <Button onClick={() => setShowTaskForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"><Plus className="w-4 h-4 mr-2" /> New Task</Button>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {client.point_of_contact && (
+          <div className="bg-card rounded-xl border border-border p-4 flex items-start gap-3">
+            <User className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Point of Contact</p>
+              <p className="text-sm text-foreground font-medium">{client.point_of_contact}</p>
+              {client.contact_info && <p className="text-xs text-muted-foreground mt-0.5">{client.contact_info}</p>}
+            </div>
+          </div>
+        )}
+
+        {staffNames.length > 0 && (
+          <div className="bg-card rounded-xl border border-border p-4 flex items-start gap-3">
+            <Users className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Support Staff</p>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {staffNames.map(name => (
+                  <span key={name} className="text-xs font-medium bg-accent/10 text-accent px-2 py-0.5 rounded-full">{name}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {(!client.point_of_contact && staffNames.length === 0) && (
+          <div className="bg-card rounded-xl border border-border p-4 flex items-start gap-3 md:col-span-2">
+            <FileText className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm text-muted-foreground">No contact or staff info yet. Click Edit to add details.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {client.scope_of_work?.length > 0 && (
+        <div className="bg-card rounded-xl border border-border p-4 mb-6 flex items-start gap-3">
+          <Briefcase className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Scope of Work</p>
+            <div className="flex flex-wrap gap-1.5">
+              {client.scope_of_work.map(scope => (
+                <span key={scope} className="text-xs font-medium bg-muted text-foreground px-2.5 py-1 rounded-full">{scope}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {client.notes && (
         <div className="bg-card rounded-xl border border-border p-5 mb-6">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Notes</p>
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{client.notes}</p>
         </div>
       )}
@@ -86,7 +139,7 @@ export default function ClientDetail() {
       )}
 
       {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} preselectedClient={id} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
-      {showEditClient && <ClientForm client={client} onClose={() => setShowEditClient(false)} onSaved={() => { setShowEditClient(false); loadData(); }} />}
+      {showEditClient && <ClientForm client={client} users={users} onClose={() => setShowEditClient(false)} onSaved={() => { setShowEditClient(false); loadData(); }} />}
       {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onUpdated={loadData} />}
     </div>
   );
