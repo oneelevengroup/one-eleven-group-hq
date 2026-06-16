@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import LeadCard from '@/components/leads/LeadCard';
 import LeadForm from '@/components/leads/LeadForm';
 
-const STATUSES = ['New', 'Contacted', 'Proposal Sent', 'Contract Sent', 'Cold'];
+const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
 
 export default function Leads() {
   const { user } = useAuth();

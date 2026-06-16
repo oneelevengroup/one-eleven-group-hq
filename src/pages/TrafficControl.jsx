@@ -131,7 +131,7 @@ export default function TrafficControl() {
               <p className="text-sm text-muted-foreground">No active leads in the pipeline.</p>
             ) : (
               <div className="space-y-1 mb-3">
-                {['New', 'Contacted', 'Proposal Sent'].map(status => (
+                {['New', 'Proposal Sent', 'Contract Sent'].map(status => (
                   <div key={status} className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">{status}</span>
                     <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full text-foreground">{statusCounts[status] || 0}</span>

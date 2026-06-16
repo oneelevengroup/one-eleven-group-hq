@@ -2,11 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Calendar, ChevronRight } from 'lucide-react';
 
-const STATUSES = ['New', 'Contacted', 'Proposal Sent', 'Contract Sent', 'Cold'];
+const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
 
 const STATUS_COLORS = {
   'New': 'bg-purple-500/10 text-purple-400',
-  'Contacted': 'bg-blue-500/10 text-blue-400',
   'Proposal Sent': 'bg-amber-500/10 text-amber-400',
   'Contract Sent': 'bg-green-500/10 text-green-400',
   'Cold': 'bg-red-500/10 text-red-400',

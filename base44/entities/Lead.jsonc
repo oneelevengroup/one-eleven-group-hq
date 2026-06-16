@@ -18,7 +18,6 @@
       "type": "string",
       "enum": [
         "New",
-        "Contacted",
         "Proposal Sent",
         "Contract Sent",
         "Cold"

@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
-const STATUSES = ['New', 'Contacted', 'Proposal Sent', 'Contract Sent', 'Cold'];
+const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
 
 export default function LeadForm({ lead, users, onClose, onSaved }) {
   const [form, setForm] = useState({
