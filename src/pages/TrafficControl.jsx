@@ -82,6 +82,10 @@ export default function TrafficControl() {
         </Button>
       </div>
 
+      <div className="mb-8">
+        <BrainDump onTasksCreated={loadData} />
+      </div>
+
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <Filter className="w-4 h-4 text-muted-foreground" />
         <select value={filters.client} onChange={e => setFilters({...filters, client: e.target.value})} className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
@@ -154,8 +158,6 @@ export default function TrafficControl() {
             )}
             <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
           </div>
-
-          <BrainDump onTasksCreated={loadData} />
 
           <div className="bg-card rounded-xl border border-border p-5">
             <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>

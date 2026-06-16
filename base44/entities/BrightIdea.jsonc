@@ -1,0 +1,38 @@
+{
+  "name": "BrightIdea",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Marketing",
+        "Operations",
+        "Growth",
+        "Creative",
+        "Tech",
+        "Other"
+      ],
+      "default": "Other"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Fresh",
+        "Exploring",
+        "In Motion",
+        "Done",
+        "Parked"
+      ],
+      "default": "Fresh"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "content"
+  ]
+}
