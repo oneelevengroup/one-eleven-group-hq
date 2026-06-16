@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Calendar, Clock, Plus, Filter } from 'lucide-react';
+import { Plus, Filter } from 'lucide-react';
 import TaskForm from '@/components/tasks/TaskForm';
 import BrainDump from '@/components/BrainDump';
 import TaskCard from '@/components/tasks/TaskCard';
@@ -79,11 +79,12 @@ export default function MyWork() {
         <div className="space-y-2">
           {filteredTasks.map(task => (
             <TaskCard
-              key={task.id}
-              task={task}
-              client={clients.find(c => c.id === task.client_id)}
-              assignee={users.find(u => u.id === task.assigned_to)}
-              onClick={() => setSelectedTask(task)}
+            key={task.id}
+            task={task}
+            client={clients.find(c => c.id === task.client_id)}
+            assignee={users.find(u => u.id === task.assigned_to)}
+            onClick={() => setSelectedTask(task)}
+            onDelete={async (t) => { await base44.entities.Task.delete(t.id); loadData(); }}
             />
           ))}
         </div>

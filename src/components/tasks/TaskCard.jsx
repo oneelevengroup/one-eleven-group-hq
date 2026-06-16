@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, User } from 'lucide-react';
+import { Calendar, User, Trash2 } from 'lucide-react';
 
 const PRIORITY_COLORS = {
   Low: 'bg-slate-500/10 text-slate-400',
@@ -16,12 +16,23 @@ const STATUS_COLORS = {
   'Completed': 'bg-green-500/10 text-green-400',
 };
 
-export default function TaskCard({ task, client, assignee, onClick }) {
+export default function TaskCard({ task, client, assignee, onClick, onDelete }) {
   return (
-    <div onClick={onClick} className="bg-background/70 rounded-lg p-3 border border-border hover:border-accent/50 cursor-pointer transition-all hover:shadow-sm">
+    <div onClick={onClick} className="bg-background/70 rounded-lg p-3 border border-border hover:border-accent/50 cursor-pointer transition-all hover:shadow-sm group">
       <div className="flex items-start justify-between gap-2 mb-2">
         <h4 className="font-heading font-bold text-sm text-foreground leading-snug">{task.name}</h4>
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
+        <div className="flex items-center gap-1 shrink-0">
+          {onDelete && (
+            <button
+              onClick={e => { e.stopPropagation(); onDelete(task); }}
+              className="text-muted-foreground/40 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+              title="Delete task"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
+        </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         {client && (
