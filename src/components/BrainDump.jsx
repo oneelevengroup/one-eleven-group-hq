@@ -34,7 +34,7 @@ export default function BrainDump({ onTasksCreated }) {
           <Rabbit className="w-4 h-4 text-accent" />
         </div>
         <div>
-          <h3 className="font-heading font-bold text-foreground text-sm">Task Rabbit · Peter</h3>
+          <h3 className="font-heading font-bold text-foreground text-sm">Peter · The Task Rabbit</h3>
           <p className="text-xs text-muted-foreground">Dump everything you need to do — Peter will add it to your to-do list</p>
         </div>
       </div>
