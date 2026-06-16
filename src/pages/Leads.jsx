@@ -36,26 +36,31 @@ export default function Leads() {
 
   useEffect(() => { loadData(); }, []);
 
+  const maybeCreateClient = async (leadId) => {
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) return;
+    const existing = await base44.entities.Client.filter({ name: lead.company_name });
+    if (existing.length === 0) {
+      await base44.entities.Client.create({
+        name: lead.company_name,
+        contact_info: lead.contact_email || '',
+        point_of_contact: lead.contact_name || '',
+        notes: lead.notes || '',
+      });
+    }
+  };
+
+  const handleStatusChange = async (leadId, newStatus) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    await base44.entities.Lead.update(leadId, { status: newStatus });
+    if (newStatus === 'Won') await maybeCreateClient(leadId);
+  };
+
   const onDragEnd = async (result) => {
     const { draggableId, destination, source } = result;
     if (!destination) return;
     if (destination.droppableId === source.droppableId) return;
-
-    const newStatus = destination.droppableId;
-    setLeads(prev => prev.map(l => l.id === draggableId ? { ...l, status: newStatus } : l));
-    await base44.entities.Lead.update(draggableId, { status: newStatus });
-
-    if (newStatus === 'Won') {
-      const lead = leads.find(l => l.id === draggableId);
-      if (lead) {
-        await base44.entities.Client.create({
-          name: lead.company_name,
-          contact_info: lead.contact_email || '',
-          point_of_contact: lead.contact_name || '',
-          notes: lead.notes || '',
-        });
-      }
-    }
+    await handleStatusChange(draggableId, destination.droppableId);
   };
 
   if (loading) return (
@@ -102,7 +107,7 @@ export default function Leads() {
                               {...provided.dragHandleProps}
                               className={snapshot.isDragging ? 'rotate-1 shadow-lg' : ''}
                             >
-                              <LeadCard lead={lead} owner={users.find(u => u.id === lead.assigned_to)} isDragging={snapshot.isDragging} />
+                              <LeadCard lead={lead} owner={users.find(u => u.id === lead.assigned_to)} isDragging={snapshot.isDragging} onStatusChange={handleStatusChange} />
                             </div>
                           )}
                         </Draggable>
