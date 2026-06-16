@@ -4,7 +4,7 @@ import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Mo
 import { useTheme } from '@/lib/ThemeContext';
 
 const navItems = [
-  { label: 'Traffic Control', path: '/', icon: LayoutDashboard },
+  { label: 'The Motherboard', path: '/', icon: LayoutDashboard },
   { label: 'My Work', path: '/my-work', icon: UserCheck },
   { label: 'Clients', path: '/clients', icon: Building2 },
   { label: 'Leads', path: '/leads', icon: Target },

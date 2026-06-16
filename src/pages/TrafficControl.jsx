@@ -62,7 +62,7 @@ export default function TrafficControl() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-heading font-extrabold text-foreground">Traffic Control</h1>
+          <h1 className="text-3xl font-heading font-extrabold text-foreground">The Motherboard</h1>
           <p className="text-muted-foreground mt-1">All client work at a glance</p>
         </div>
         <Button onClick={() => setShowTaskForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
