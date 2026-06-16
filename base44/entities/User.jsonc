@@ -1,0 +1,42 @@
+{
+  "properties": {
+    "role": {
+      "type": "string",
+      "description": "The role of the user in the app",
+      "enum": [
+        "admin",
+        "user"
+      ]
+    },
+    "theme_preference": {
+      "type": "string",
+      "enum": [
+        "dark",
+        "light"
+      ],
+      "default": "dark"
+    },
+    "notification_preference": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "both",
+        "none"
+      ],
+      "default": "email"
+    },
+    "phone_number": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string",
+      "default": "America/New_York"
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "name": "User",
+  "type": "object"
+}

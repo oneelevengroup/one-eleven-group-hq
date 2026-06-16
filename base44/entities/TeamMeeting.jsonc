@@ -1,0 +1,28 @@
+{
+  "name": "TeamMeeting",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "agenda": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "action_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

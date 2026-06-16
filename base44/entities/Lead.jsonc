@@ -1,0 +1,42 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string"
+    },
+    "contact_name": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Contacted",
+        "Proposal Sent",
+        "Won",
+        "Lost"
+      ],
+      "default": "New"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "next_followup_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "company_name"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Touchpoint",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "call",
+        "email",
+        "meeting"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "lead_id",
+    "type"
+  ]
+}
