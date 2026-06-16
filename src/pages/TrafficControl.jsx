@@ -3,9 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { Plus, Users, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
-import TaskDetail from '@/components/tasks/TaskDetail';
 import LeadCard from '@/components/leads/LeadCard';
 import BrainDump from '@/components/BrainDump';
 import { Button } from '@/components/ui/button';
@@ -18,7 +16,6 @@ export default function TrafficControl() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
 
   const loadData = async () => {
     const [taskList, clientList, userList, leadList] = await Promise.all([
@@ -36,19 +33,10 @@ export default function TrafficControl() {
 
   useEffect(() => { loadData(); }, []);
 
-  const groupedByClient = tasks.reduce((acc, t) => {
-    const clientId = t.client_id || 'unassigned';
-    if (!acc[clientId]) acc[clientId] = [];
-    acc[clientId].push(t);
-    return acc;
-  }, {});
-
   const workload = users.reduce((acc, u) => {
     acc[u.id] = tasks.filter(t => t.assigned_to === u.id && t.status !== 'Completed').length;
     return acc;
   }, {});
-
-  const getClient = (id) => clients.find(c => c.id === id);
 
   const activeLeads = leads.filter(l => l.status !== 'Contract Sent' && l.status !== 'Cold');
   const statusCounts = activeLeads.reduce((acc, l) => {
@@ -120,30 +108,7 @@ export default function TrafficControl() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        {Object.keys(groupedByClient).length === 0 ? null : (
-          Object.entries(groupedByClient).map(([clientId, clientTasks]) => {
-            const client = getClient(clientId);
-            return (
-              <div key={clientId} className="bg-card rounded-xl border border-border p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  {client?.color_tag && <span className="w-3 h-3 rounded-full" style={{backgroundColor: client.color_tag}} />}
-                  <h3 className="font-heading font-bold text-foreground">{client?.name || 'Unassigned'}</h3>
-                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">{clientTasks.length}</span>
-                </div>
-                <div className="space-y-2">
-                  {clientTasks.map(task => (
-                    <TaskCard key={task.id} task={task} client={getClient(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
-                  ))}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
       {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
-      {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onUpdated={loadData} />}
     </div>
   );
 }

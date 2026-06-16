@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Calendar, User, Send } from 'lucide-react';
 
 const PRIORITY_COLORS = { Low: 'bg-slate-500/10 text-slate-400', Medium: 'bg-blue-500/10 text-blue-400', High: 'bg-orange-500/10 text-orange-400', Urgent: 'bg-red-500/10 text-red-400' };
-const STATUS_COLORS = { 'URGENT': 'bg-red-500/10 text-red-400', 'To Do': 'bg-slate-500/10 text-slate-400', 'In Progress': 'bg-accent/10 text-accent', 'Stuck': 'bg-amber-500/10 text-amber-400', 'Completed': 'bg-green-500/10 text-green-400' };
+const STATUS_COLORS = { 'URGENT': 'bg-red-100 text-red-500 dark:bg-red-500/20 dark:text-red-400', 'To Do': 'bg-slate-500/10 text-slate-400', 'In Progress': 'bg-accent/10 text-accent', 'Stuck': 'bg-amber-500/10 text-amber-400', 'Completed': 'bg-green-500/10 text-green-400' };
 
 export default function TaskDetail({ task, clients, users, currentUser, onClose, onUpdated }) {
   const [comments, setComments] = useState([]);

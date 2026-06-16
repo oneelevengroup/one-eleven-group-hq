@@ -9,7 +9,7 @@ const PRIORITY_COLORS = {
 };
 
 const STATUS_COLORS = {
-  'URGENT': 'bg-red-500/10 text-red-400',
+  'URGENT': 'bg-red-100 text-red-500 dark:bg-red-500/20 dark:text-red-400',
   'To Do': 'bg-slate-500/10 text-slate-400',
   'In Progress': 'bg-accent/10 text-accent',
   'Stuck': 'bg-amber-500/10 text-amber-400',
