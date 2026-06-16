@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Plus } from 'lucide-react';
 import TaskCard from '@/components/tasks/TaskCard';
+import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
+import { Button } from '@/components/ui/button';
 
 export default function MyWork() {
   const { user } = useAuth();
@@ -12,6 +14,7 @@ export default function MyWork() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [showTaskForm, setShowTaskForm] = useState(false);
   const [filter, setFilter] = useState('all');
 
   const loadData = async () => {
@@ -40,9 +43,14 @@ export default function MyWork() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-heading font-extrabold text-foreground">My Work</h1>
-        <p className="text-muted-foreground mt-1">Your tasks and schedule</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-heading font-extrabold text-foreground">My Work</h1>
+          <p className="text-muted-foreground mt-1">Your tasks and schedule</p>
+        </div>
+        <Button onClick={() => setShowTaskForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
+          <Plus className="w-4 h-4 mr-2" /> New Task
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -79,6 +87,7 @@ export default function MyWork() {
         </div>
       </div>
 
+      {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
       {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onUpdated={loadData} />}
     </div>
   );
