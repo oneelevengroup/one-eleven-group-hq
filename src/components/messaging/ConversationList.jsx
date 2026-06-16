@@ -54,8 +54,8 @@ export default function ConversationList({ conversations, users, currentUser, se
   const otherUsers = users.filter(u => u.id !== currentUser.id);
 
   return (
-    <div className="flex flex-col h-full bg-[#4D2D52]">
-      <div className="p-4 border-b border-[#5a3660]">
+    <div className="flex flex-col h-full bg-[#1a6b7a]">
+      <div className="p-4 border-b border-[#238396]">
         <h2 className="font-heading font-extrabold text-base text-white">Messages</h2>
       </div>
 
@@ -64,10 +64,10 @@ export default function ConversationList({ conversations, users, currentUser, se
         <div className="px-3 mb-4">
           <div className="flex items-center justify-between mb-2 px-1">
             <div className="flex items-center gap-1.5">
-              <Hash className="w-3.5 h-3.5 text-[#DBCBDD]" />
-              <span className="text-[11px] font-bold text-[#DBCBDD] uppercase tracking-wider">Channels</span>
+              <Hash className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[11px] font-bold text-accent uppercase tracking-wider">Channels</span>
             </div>
-            <button onClick={() => setShowNew('channel')} className="text-[#DBCBDD] hover:text-white transition-colors">
+            <button onClick={() => setShowNew('channel')} className="text-accent hover:text-white transition-colors">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -77,11 +77,11 @@ export default function ConversationList({ conversations, users, currentUser, se
               onClick={() => onSelect(c.id)}
               className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-left transition-all ${
                 selectedId === c.id
-                  ? 'bg-[#F4EFF5] text-[#2C152E] font-semibold'
-                  : 'text-[#DBCBDD] hover:text-white hover:bg-white/5'
+                  ? 'bg-accent text-accent-foreground font-semibold'
+                  : 'text-accent/70 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Hash className={`w-4 h-4 flex-shrink-0 ${selectedId === c.id ? 'text-[#2C152E]' : ''}`} />
+              <Hash className={`w-4 h-4 flex-shrink-0 ${selectedId === c.id ? 'text-accent-foreground' : ''}`} />
               <span className="truncate lowercase">{c.name}</span>
             </button>
           ))}
@@ -91,10 +91,10 @@ export default function ConversationList({ conversations, users, currentUser, se
         <div className="px-3">
           <div className="flex items-center justify-between mb-2 px-1">
             <div className="flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-[#DBCBDD]" />
-              <span className="text-[11px] font-bold text-[#DBCBDD] uppercase tracking-wider">Direct Messages</span>
+              <Lock className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[11px] font-bold text-accent uppercase tracking-wider">Direct Messages</span>
             </div>
-            <button onClick={() => setShowNew('dm')} className="text-[#DBCBDD] hover:text-white transition-colors">
+            <button onClick={() => setShowNew('dm')} className="text-accent hover:text-white transition-colors">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -107,12 +107,12 @@ export default function ConversationList({ conversations, users, currentUser, se
                 onClick={() => onSelect(c.id)}
                 className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-left transition-all ${
                   selectedId === c.id
-                    ? 'bg-[#F4EFF5] text-[#2C152E] font-semibold'
-                    : 'text-[#DBCBDD] hover:text-white hover:bg-white/5'
+                    ? 'bg-accent text-accent-foreground font-semibold'
+                    : 'text-accent/70 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${selectedId === c.id ? 'bg-[#4D2D52]' : 'bg-white/10'}`}>
-                  <Lock className={`w-2.5 h-2.5 ${selectedId === c.id ? 'text-[#F4EFF5]' : 'text-[#DBCBDD]'}`} />
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${selectedId === c.id ? 'bg-accent-foreground/20' : 'bg-white/10'}`}>
+                  <Lock className={`w-2.5 h-2.5 ${selectedId === c.id ? 'text-accent-foreground' : 'text-accent'}`} />
                 </div>
                 <span className="truncate">{otherUser?.full_name || 'Unknown'}</span>
               </button>

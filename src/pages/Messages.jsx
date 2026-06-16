@@ -94,7 +94,7 @@ export default function Messages() {
   return (
     <div className="flex h-[calc(100vh-3rem)] -m-6">
       {/* Left sidebar - conversation list */}
-      <div className="w-60 flex-shrink-0 border-r border-[#5a3660] hidden md:flex flex-col">
+      <div className="w-60 flex-shrink-0 border-r border-[#238396] hidden md:flex flex-col">
         <ConversationList
           conversations={conversations}
           users={users}
