@@ -130,43 +130,45 @@ export default function TrafficControl() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-card rounded-xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Target className="w-5 h-5" /> Active Pipeline</h3>
-            {activeLeads.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No active leads in the pipeline.</p>
-            ) : (
-              <div className="space-y-1 mb-3">
-                {['New', 'Proposal Sent', 'Contract Sent'].map(status => (
-                  <div key={status} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{status}</span>
-                    <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full text-foreground">{statusCounts[status] || 0}</span>
-                  </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-card rounded-xl border border-border p-5">
+              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>
+              <div className="space-y-2">
+                {users.map(u => (
+                  <p key={u.id} className="text-sm text-muted-foreground">
+                    <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
+                  </p>
                 ))}
               </div>
-            )}
-            {activeLeads.length > 0 && (
-              <div className="space-y-1.5">
-                {activeLeads.slice(0, 5).map(lead => (
-                  <LeadCard key={lead.id} lead={lead} owner={users.find(u => u.id === lead.assigned_to)} />
-                ))}
-                {activeLeads.length > 5 && (
-                  <Link to="/leads" className="text-xs text-accent font-medium block text-center pt-1 hover:underline">
-                    +{activeLeads.length - 5} more leads
-                  </Link>
-                )}
-              </div>
-            )}
-            <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
-          </div>
+            </div>
 
-          <div className="bg-card rounded-xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>
-            <div className="space-y-2">
-              {users.map(u => (
-                <p key={u.id} className="text-sm text-muted-foreground">
-                  <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
-                </p>
-              ))}
+            <div className="bg-card rounded-xl border border-border p-5">
+              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Target className="w-5 h-5" /> Active Pipeline</h3>
+              {activeLeads.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No active leads in the pipeline.</p>
+              ) : (
+                <div className="space-y-1 mb-3">
+                  {['New', 'Proposal Sent', 'Contract Sent'].map(status => (
+                    <div key={status} className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{status}</span>
+                      <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full text-foreground">{statusCounts[status] || 0}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {activeLeads.length > 0 && (
+                <div className="space-y-1.5">
+                  {activeLeads.slice(0, 5).map(lead => (
+                    <LeadCard key={lead.id} lead={lead} owner={users.find(u => u.id === lead.assigned_to)} />
+                  ))}
+                  {activeLeads.length > 5 && (
+                    <Link to="/leads" className="text-xs text-accent font-medium block text-center pt-1 hover:underline">
+                      +{activeLeads.length - 5} more leads
+                    </Link>
+                  )}
+                </div>
+              )}
+              <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
             </div>
           </div>
 
