@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Plus, Filter, Users, Calendar, Target } from 'lucide-react';
+import { Plus, Filter, Users, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
@@ -132,7 +132,7 @@ export default function TrafficControl() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Workload</h3>
+              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
               <div className="space-y-2">
                 {users.map(u => (
                   <p key={u.id} className="text-sm text-muted-foreground">
@@ -172,10 +172,7 @@ export default function TrafficControl() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-5 h-5" /> Today</h3>
-            <p className="text-sm text-muted-foreground">Connect your Google Calendar in Settings to see today's events and suggested work blocks.</p>
-          </div>
+
         </div>
       </div>
 
