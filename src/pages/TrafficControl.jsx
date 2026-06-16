@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Plus, Filter, Users, Target } from 'lucide-react';
+import { Plus, Users, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
@@ -19,7 +19,6 @@ export default function TrafficControl() {
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [filters, setFilters] = useState({ client: '', status: '', assignee: '' });
 
   const loadData = async () => {
     const [taskList, clientList, userList, leadList] = await Promise.all([
@@ -37,14 +36,7 @@ export default function TrafficControl() {
 
   useEffect(() => { loadData(); }, []);
 
-  const filteredTasks = tasks.filter(t => {
-    if (filters.client && t.client_id !== filters.client) return false;
-    if (filters.status && t.status !== filters.status) return false;
-    if (filters.assignee && t.assigned_to !== filters.assignee) return false;
-    return true;
-  });
-
-  const groupedByClient = filteredTasks.reduce((acc, t) => {
+  const groupedByClient = tasks.reduce((acc, t) => {
     const clientId = t.client_id || 'unassigned';
     if (!acc[clientId]) acc[clientId] = [];
     acc[clientId].push(t);
@@ -86,27 +78,13 @@ export default function TrafficControl() {
         <BrainDump onTasksCreated={loadData} />
       </div>
 
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <Filter className="w-4 h-4 text-muted-foreground" />
-        <select value={filters.client} onChange={e => setFilters({...filters, client: e.target.value})} className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
-          <option value="">All Clients</option>
-          {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <select value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})} className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
-          <option value="">All Statuses</option>
-          {['To Do', 'In Progress', 'In Review', 'Done'].map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select value={filters.assignee} onChange={e => setFilters({...filters, assignee: e.target.value})} className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
-          <option value="">All Team</option>
-          {users.map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
-        </select>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {Object.keys(groupedByClient).length === 0 ? (
             <div className="bg-card rounded-xl border border-border p-12 text-center">
-              <p className="text-muted-foreground">No tasks match your filters. Create one to get started!</p>
+              <p className="text-muted-foreground">No tasks yet. Create one to get started!</p>
             </div>
           ) : (
             Object.entries(groupedByClient).map(([clientId, clientTasks]) => {
