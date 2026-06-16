@@ -5,6 +5,7 @@ import { Calendar, Clock, Plus } from 'lucide-react';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
+import BrainDump from '@/components/BrainDump';
 import { Button } from '@/components/ui/button';
 
 export default function MyWork() {
@@ -51,6 +52,10 @@ export default function MyWork() {
         <Button onClick={() => setShowTaskForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
           <Plus className="w-4 h-4 mr-2" /> New Task
         </Button>
+      </div>
+
+      <div className="mb-8">
+        <BrainDump onTasksCreated={loadData} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
