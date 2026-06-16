@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Brain, Loader2, Sparkles } from 'lucide-react';
+import { Rabbit, Loader2, Sparkles } from 'lucide-react';
 
 export default function BrainDump({ onTasksCreated }) {
   const [text, setText] = useState('');
@@ -31,11 +31,11 @@ export default function BrainDump({ onTasksCreated }) {
     <div className="bg-card rounded-xl border border-border p-6">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-          <Brain className="w-4 h-4 text-accent" />
+          <Rabbit className="w-4 h-4 text-accent" />
         </div>
         <div>
-          <h3 className="font-heading font-bold text-foreground text-sm">AI Brain Dump</h3>
-          <p className="text-xs text-muted-foreground">Dump your thoughts and I'll turn them into tasks</p>
+          <h3 className="font-heading font-bold text-foreground text-sm">Task Rabbit · Peter</h3>
+          <p className="text-xs text-muted-foreground">Dump everything you need to do — Peter will add it to your to-do list</p>
         </div>
       </div>
 
