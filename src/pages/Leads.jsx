@@ -44,6 +44,18 @@ export default function Leads() {
     const newStatus = destination.droppableId;
     setLeads(prev => prev.map(l => l.id === draggableId ? { ...l, status: newStatus } : l));
     await base44.entities.Lead.update(draggableId, { status: newStatus });
+
+    if (newStatus === 'Won') {
+      const lead = leads.find(l => l.id === draggableId);
+      if (lead) {
+        await base44.entities.Client.create({
+          name: lead.company_name,
+          contact_info: lead.contact_email || '',
+          point_of_contact: lead.contact_name || '',
+          notes: lead.notes || '',
+        });
+      }
+    }
   };
 
   if (loading) return (
