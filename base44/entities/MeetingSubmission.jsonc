@@ -1,0 +1,22 @@
+{
+  "name": "MeetingSubmission",
+  "type": "object",
+  "properties": {
+    "meeting_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "hot_topics": {
+      "type": "string"
+    },
+    "weekly_win": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "meeting_id",
+    "user_id"
+  ]
+}

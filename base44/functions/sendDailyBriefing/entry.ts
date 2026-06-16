@@ -71,11 +71,34 @@ Deno.serve(async (req) => {
         body += `</ul>`;
       }
 
+      // Team Meeting Reminder (Monday only)
+      const isMonday = today.getDay() === 1;
+      let meetingReminder = '';
+      if (isMonday) {
+        const meetings = await base44.asServiceRole.entities.TeamMeeting.list('-date');
+        const upcomingMeeting = meetings.find(m => {
+          if (!m.date) return false;
+          const meetingDate = new Date(m.date + 'T12:00:00');
+          const diff = (meetingDate - today) / (1000 * 60 * 60 * 24);
+          return diff >= 0 && diff <= 7;
+        });
+        if (upcomingMeeting) {
+          const meetingDay = new Date(upcomingMeeting.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+          meetingReminder = `<div style="background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 8px; padding: 16px; margin-top: 20px;">`;
+          meetingReminder += `<h2 style="color: #b45309; font-size: 15px; font-weight: 700; margin: 0 0 8px;">📢 Team Meeting Tomorrow — 11:00 AM</h2>`;
+          meetingReminder += `<p style="color: #78350f; font-size: 13px; margin: 0 0 8px;"><strong>${upcomingMeeting.title}</strong> — ${meetingDay}</p>`;
+          meetingReminder += `<p style="color: #78350f; font-size: 13px; margin: 0;">Please submit your <strong>🔥 Hot Topics</strong> and <strong>🏆 Weekly Win</strong> before the meeting. <a href="https://one-eleven-group-hq.base44.app/team-meetings" style="color: #b45309; font-weight: 600;">Submit here →</a></p>`;
+          meetingReminder += `</div>`;
+        }
+      }
+
       // Summary
       const totalOpen = myTasks.length;
       body += `<div style="background: #f1f5f9; border-radius: 8px; padding: 12px 16px; margin-top: 20px;">`;
       body += `<p style="margin: 0; font-size: 13px; color: #475569;"><strong>📊 Your Snapshot:</strong> ${totalOpen} open task${totalOpen !== 1 ? 's' : ''}, ${dueToday.length} due today, ${highPriority.length} high priority</p>`;
       body += `</div>`;
+
+      if (meetingReminder) body += meetingReminder;
 
       body += `<p style="color: #94a3b8; font-size: 12px; margin: 16px 0 0; text-align: center;">View full dashboard → <a href="https://one-eleven-group-hq.base44.app" style="color: #A5F8D3;">One Eleven Group HQ</a></p>`;
       body += `</div></div>`;
