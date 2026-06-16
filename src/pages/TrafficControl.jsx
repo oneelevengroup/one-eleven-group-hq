@@ -78,76 +78,68 @@ export default function TrafficControl() {
         <BrainDump onTasksCreated={loadData} />
       </div>
 
-
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          {Object.keys(groupedByClient).length === 0 ? null : (
-            Object.entries(groupedByClient).map(([clientId, clientTasks]) => {
-              const client = getClient(clientId);
-              return (
-                <div key={clientId} className="bg-card rounded-xl border border-border p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    {client?.color_tag && <span className="w-3 h-3 rounded-full" style={{backgroundColor: client.color_tag}} />}
-                    <h3 className="font-heading font-bold text-foreground">{client?.name || 'Unassigned'}</h3>
-                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">{clientTasks.length}</span>
-                  </div>
-                  <div className="space-y-2">
-                    {clientTasks.map(task => (
-                      <TaskCard key={task.id} task={task} client={getClient(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
-              <div className="space-y-2">
-                {users.map(u => (
-                  <p key={u.id} className="text-sm text-muted-foreground">
-                    <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Target className="w-5 h-5" /> Active Pipeline</h3>
-              {activeLeads.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No active leads in the pipeline.</p>
-              ) : (
-                <div className="space-y-1 mb-3">
-                  {['New', 'Proposal Sent', 'Contract Sent'].map(status => (
-                    <div key={status} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{status}</span>
-                      <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full text-foreground">{statusCounts[status] || 0}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {activeLeads.length > 0 && (
-                <div className="space-y-1.5">
-                  {activeLeads.slice(0, 5).map(lead => (
-                    <LeadCard key={lead.id} lead={lead} owner={users.find(u => u.id === lead.assigned_to)} />
-                  ))}
-                  {activeLeads.length > 5 && (
-                    <Link to="/leads" className="text-xs text-accent font-medium block text-center pt-1 hover:underline">
-                      +{activeLeads.length - 5} more leads
-                    </Link>
-                  )}
-                </div>
-              )}
-              <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
-            </div>
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
+          <div className="space-y-2">
+            {users.map(u => (
+              <p key={u.id} className="text-sm text-muted-foreground">
+                <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
+              </p>
+            ))}
           </div>
-
-
         </div>
+
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Target className="w-5 h-5" /> Active Pipeline</h3>
+          {activeLeads.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No active leads in the pipeline.</p>
+          ) : (
+            <div className="space-y-1 mb-3">
+              {['New', 'Proposal Sent', 'Contract Sent'].map(status => (
+                <div key={status} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{status}</span>
+                  <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-full text-foreground">{statusCounts[status] || 0}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {activeLeads.length > 0 && (
+            <div className="space-y-1.5">
+              {activeLeads.slice(0, 5).map(lead => (
+                <LeadCard key={lead.id} lead={lead} owner={users.find(u => u.id === lead.assigned_to)} />
+              ))}
+              {activeLeads.length > 5 && (
+                <Link to="/leads" className="text-xs text-accent font-medium block text-center pt-1 hover:underline">
+                  +{activeLeads.length - 5} more leads
+                </Link>
+              )}
+            </div>
+          )}
+          <Link to="/leads" className="text-xs text-accent font-medium hover:underline mt-2 inline-block">View all leads →</Link>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {Object.keys(groupedByClient).length === 0 ? null : (
+          Object.entries(groupedByClient).map(([clientId, clientTasks]) => {
+            const client = getClient(clientId);
+            return (
+              <div key={clientId} className="bg-card rounded-xl border border-border p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  {client?.color_tag && <span className="w-3 h-3 rounded-full" style={{backgroundColor: client.color_tag}} />}
+                  <h3 className="font-heading font-bold text-foreground">{client?.name || 'Unassigned'}</h3>
+                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">{clientTasks.length}</span>
+                </div>
+                <div className="space-y-2">
+                  {clientTasks.map(task => (
+                    <TaskCard key={task.id} task={task} client={getClient(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
