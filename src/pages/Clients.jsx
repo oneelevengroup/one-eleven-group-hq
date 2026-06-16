@@ -55,20 +55,18 @@ export default function Clients() {
           <p className="text-muted-foreground">No clients yet. Add your first client to get started!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-2">
           {clients.map(client => {
             const counts = getTaskCount(client.id);
             return (
-              <Link key={client.id} to={`/clients/${client.id}`} className="bg-card rounded-xl border border-border p-5 hover:border-accent/50 transition-colors group">
-                <div className="flex items-center gap-3 mb-3">
-                  {client.color_tag && <span className="w-4 h-4 rounded-full flex-shrink-0" style={{backgroundColor: client.color_tag}} />}
-                  <h3 className="font-heading font-bold text-foreground text-lg truncate">{client.name}</h3>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div className="flex items-center gap-3 text-sm">
+              <Link key={client.id} to={`/clients/${client.id}`} className="flex items-center gap-4 bg-card rounded-xl border border-border px-5 py-4 hover:border-accent/50 transition-colors group">
+                {client.color_tag && <span className="w-4 h-4 rounded-full flex-shrink-0" style={{backgroundColor: client.color_tag}} />}
+                <h3 className="font-heading font-bold text-foreground text-base flex-1">{client.name}</h3>
+                <div className="flex items-center gap-3 text-sm flex-shrink-0">
                   <span className="text-muted-foreground">{counts.total} task{counts.total !== 1 ? 's' : ''}</span>
                   {counts.open > 0 && <span className="text-accent font-semibold">{counts.open} open</span>}
                 </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
               </Link>
             );
           })}
