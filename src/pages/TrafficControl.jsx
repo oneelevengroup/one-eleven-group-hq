@@ -44,7 +44,7 @@ export default function TrafficControl() {
   }, {});
 
   const workload = users.reduce((acc, u) => {
-    acc[u.id] = tasks.filter(t => t.assigned_to === u.id && t.status !== 'Done').length;
+    acc[u.id] = tasks.filter(t => t.assigned_to === u.id && t.status !== 'Completed').length;
     return acc;
   }, {});
 

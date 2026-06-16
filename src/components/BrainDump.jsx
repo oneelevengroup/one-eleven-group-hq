@@ -125,7 +125,7 @@ export default function BrainDump({ onTasksCreated }) {
           <p className="text-foreground font-semibold mb-1">{result.count} task{result.count !== 1 ? 's' : ''} created</p>
           <div className="text-xs text-muted-foreground space-y-0.5 mt-2 mb-4">
            {result.tasks?.map((t, i) => {
-             const isDone = t.status === 'Done';
+             const isDone = t.status === 'Completed';
              return (
                <p key={i} className={`flex items-center justify-center gap-2 ${isDone ? 'line-through text-muted-foreground/60' : ''}`}>
                  {isDone ? (

@@ -79,7 +79,7 @@ export default function TaskForm({ clients, users, currentUser, preselectedClien
             <div>
               <label className="text-sm font-medium text-foreground block mb-1.5">Status</label>
               <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
-                {['To Do', 'In Progress', 'In Review', 'Done'].map(s => <option key={s} value={s}>{s}</option>)}
+                {['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>

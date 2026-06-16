@@ -9,10 +9,11 @@ const PRIORITY_COLORS = {
 };
 
 const STATUS_COLORS = {
+  'URGENT': 'bg-red-500/10 text-red-400',
   'To Do': 'bg-slate-500/10 text-slate-400',
   'In Progress': 'bg-accent/10 text-accent',
-  'In Review': 'bg-amber-500/10 text-amber-400',
-  'Done': 'bg-green-500/10 text-green-400',
+  'Stuck': 'bg-amber-500/10 text-amber-400',
+  'Completed': 'bg-green-500/10 text-green-400',
 };
 
 export default function TaskCard({ task, client, assignee, onClick }) {

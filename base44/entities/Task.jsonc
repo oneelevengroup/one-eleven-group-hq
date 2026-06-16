@@ -31,10 +31,11 @@
     "status": {
       "type": "string",
       "enum": [
+        "URGENT",
         "To Do",
         "In Progress",
-        "In Review",
-        "Done"
+        "Stuck",
+        "Completed"
       ],
       "default": "To Do"
     },

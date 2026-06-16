@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Calendar, User, Send } from 'lucide-react';
 
 const PRIORITY_COLORS = { Low: 'bg-slate-500/10 text-slate-400', Medium: 'bg-blue-500/10 text-blue-400', High: 'bg-orange-500/10 text-orange-400', Urgent: 'bg-red-500/10 text-red-400' };
-const STATUS_COLORS = { 'To Do': 'bg-slate-500/10 text-slate-400', 'In Progress': 'bg-accent/10 text-accent', 'In Review': 'bg-amber-500/10 text-amber-400', 'Done': 'bg-green-500/10 text-green-400' };
+const STATUS_COLORS = { 'URGENT': 'bg-red-500/10 text-red-400', 'To Do': 'bg-slate-500/10 text-slate-400', 'In Progress': 'bg-accent/10 text-accent', 'Stuck': 'bg-amber-500/10 text-amber-400', 'Completed': 'bg-green-500/10 text-green-400' };
 
 export default function TaskDetail({ task, clients, users, currentUser, onClose, onUpdated }) {
   const [comments, setComments] = useState([]);
@@ -78,7 +78,7 @@ export default function TaskDetail({ task, clients, users, currentUser, onClose,
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2">Quick Status</p>
             <div className="flex gap-2 flex-wrap">
-              {['To Do', 'In Progress', 'In Review', 'Done'].map(s => (
+              {['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'].map(s => (
                 <button key={s} onClick={() => handleStatusChange(s)} className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${task.status === s ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>{s}</button>
               ))}
             </div>
@@ -89,7 +89,7 @@ export default function TaskDetail({ task, clients, users, currentUser, onClose,
               <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground" />
               <div className="grid grid-cols-2 gap-3">
                 <select value={editForm.status} onChange={e => setEditForm({...editForm, status: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground">
-                  {['To Do', 'In Progress', 'In Review', 'Done'].map(s => <option key={s}>{s}</option>)}
+                  {['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'].map(s => <option key={s}>{s}</option>)}
                 </select>
                 <select value={editForm.priority} onChange={e => setEditForm({...editForm, priority: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground">
                   {['Low', 'Medium', 'High', 'Urgent'].map(p => <option key={p}>{p}</option>)}

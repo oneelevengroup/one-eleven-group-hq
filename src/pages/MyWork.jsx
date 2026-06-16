@@ -61,7 +61,7 @@ export default function MyWork() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center gap-2">
-            {['all', 'To Do', 'In Progress', 'In Review', 'Done'].map(s => (
+            {['all', 'URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'].map(s => (
               <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${filter === s ? 'bg-accent text-accent-foreground' : 'bg-card text-muted-foreground hover:text-foreground border border-border'}`}>
                 {s === 'all' ? 'All' : s}
               </button>

@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
 
       // Get tasks assigned to this user
       const allTasks = await base44.asServiceRole.entities.Task.list();
-      const myTasks = allTasks.filter(t => t.assigned_to === user.id && t.status !== 'Done');
+      const myTasks = allTasks.filter(t => t.assigned_to === user.id && t.status !== 'Completed');
 
       const dueToday = myTasks.filter(t => {
         if (!t.due_date) return false;

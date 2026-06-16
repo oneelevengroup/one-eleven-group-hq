@@ -29,13 +29,13 @@ For each task, extract:
 - priority: "Low", "Medium", "High", or "Urgent" based on urgency cues in the text
 - due_date: if a date or timeframe is mentioned, return as YYYY-MM-DD (use 2026 as current year if no year specified). Use null if not mentioned.
 - notes: any additional details or context
-- status: "Done" if the item is crossed out, struck through, has a checkmark, or is visibly marked as complete. Otherwise "To Do".
+- status: "Completed" if the item is crossed out, struck through, has a checkmark, or is visibly marked as complete. Otherwise "To Do".
 
 Rules:
 - Break multi-step items into separate tasks
 - If someone says "call X" or "email X", that's a task
 - Be specific and actionable
-- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Done".' : ''}
+- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Completed".' : ''}
 
 ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
       file_urls: hasImage ? [image_url] : undefined,
