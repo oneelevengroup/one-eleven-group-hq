@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LeadCard from '@/components/leads/LeadCard';
@@ -35,6 +36,16 @@ export default function Leads() {
 
   useEffect(() => { loadData(); }, []);
 
+  const onDragEnd = async (result) => {
+    const { draggableId, destination, source } = result;
+    if (!destination) return;
+    if (destination.droppableId === source.droppableId) return;
+
+    const newStatus = destination.droppableId;
+    setLeads(prev => prev.map(l => l.id === draggableId ? { ...l, status: newStatus } : l));
+    await base44.entities.Lead.update(draggableId, { status: newStatus });
+  };
+
   if (loading) return (
     <div className="flex items-center justify-center h-64">
       <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
@@ -53,27 +64,49 @@ export default function Leads() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {STATUSES.map(status => {
-          const statusLeads = leads.filter(l => l.status === status);
-          return (
-            <div key={status} className={`bg-muted/40 rounded-xl p-4 border-t-2 ${STATUS_HEADER_COLORS[status]}`}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-heading font-bold text-sm text-foreground">{status}</h3>
-                <span className="text-xs text-muted-foreground bg-card px-2 py-0.5 rounded-full font-medium">{statusLeads.length}</span>
-              </div>
-              <div className="space-y-2">
-                {statusLeads.map(lead => (
-                  <LeadCard key={lead.id} lead={lead} owner={users.find(u => u.id === lead.assigned_to)} />
-                ))}
-                {statusLeads.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-3">No leads</p>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {STATUSES.map(status => {
+            const statusLeads = leads.filter(l => l.status === status);
+            return (
+              <Droppable key={status} droppableId={status}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`bg-muted/40 rounded-xl p-4 border-t-2 transition-colors ${STATUS_HEADER_COLORS[status]} ${snapshot.isDraggingOver ? 'bg-accent/10 border-accent/30' : ''}`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-heading font-bold text-sm text-foreground">{status}</h3>
+                      <span className="text-xs text-muted-foreground bg-card px-2 py-0.5 rounded-full font-medium">{statusLeads.length}</span>
+                    </div>
+                    <div className="space-y-2 min-h-[40px]">
+                      {statusLeads.map((lead, index) => (
+                        <Draggable key={lead.id} draggableId={lead.id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={snapshot.isDragging ? 'rotate-1 shadow-lg' : ''}
+                            >
+                              <LeadCard lead={lead} owner={users.find(u => u.id === lead.assigned_to)} isDragging={snapshot.isDragging} />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                      {statusLeads.length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center py-3">No leads</p>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              </Droppable>
+            );
+          })}
+        </div>
+      </DragDropContext>
 
       {showForm && <LeadForm users={users} onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); loadData(); }} />}
     </div>
