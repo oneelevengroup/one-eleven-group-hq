@@ -124,14 +124,21 @@ export default function BrainDump({ onTasksCreated }) {
           </div>
           <p className="text-foreground font-semibold mb-1">{result.count} task{result.count !== 1 ? 's' : ''} created</p>
           <div className="text-xs text-muted-foreground space-y-0.5 mt-2 mb-4">
-            {result.tasks?.map((t, i) => (
-              <p key={i} className="flex items-center justify-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${
-                  t.priority === 'Urgent' ? 'bg-red-400' : t.priority === 'High' ? 'bg-amber-400' : 'bg-blue-400'
-                }`} />
-                {t.name}
-              </p>
-            ))}
+           {result.tasks?.map((t, i) => {
+             const isDone = t.status === 'Done';
+             return (
+               <p key={i} className={`flex items-center justify-center gap-2 ${isDone ? 'line-through text-muted-foreground/60' : ''}`}>
+                 {isDone ? (
+                   <span className="text-green-400 text-xs">✓</span>
+                 ) : (
+                   <span className={`w-1.5 h-1.5 rounded-full ${
+                     t.priority === 'Urgent' ? 'bg-red-400' : t.priority === 'High' ? 'bg-amber-400' : 'bg-blue-400'
+                   }`} />
+                 )}
+                 {t.name}
+               </p>
+             );
+           })}
           </div>
           <div className="flex gap-2 justify-center">
             <Button size="sm" onClick={handleDone} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">Done</Button>

@@ -29,12 +29,13 @@ For each task, extract:
 - priority: "Low", "Medium", "High", or "Urgent" based on urgency cues in the text
 - due_date: if a date or timeframe is mentioned, return as YYYY-MM-DD (use 2026 as current year if no year specified). Use null if not mentioned.
 - notes: any additional details or context
+- status: "Done" if the item is crossed out, struck through, has a checkmark, or is visibly marked as complete. Otherwise "To Do".
 
 Rules:
 - Break multi-step items into separate tasks
 - If someone says "call X" or "email X", that's a task
 - Be specific and actionable
-- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task' : ''}
+- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Done".' : ''}
 
 ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
       file_urls: hasImage ? [image_url] : undefined,
@@ -51,6 +52,7 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
                 priority: { type: 'string' },
                 due_date: { type: 'string' },
                 notes: { type: 'string' },
+                status: { type: 'string' },
               },
               required: ['name', 'priority'],
             },
@@ -88,14 +90,14 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
         assigned_to: user.id,
         assigned_by: user.id,
         priority: task.priority || 'Medium',
-        status: 'To Do',
+        status: task.status || 'To Do',
         due_date: task.due_date || null,
         notes: task.notes || '',
       });
       created.push(newTask);
     }
 
-    return Response.json({ success: true, count: created.length, tasks: created.map(t => ({ id: t.id, name: t.name, priority: t.priority })) });
+    return Response.json({ success: true, count: created.length, tasks: created.map(t => ({ id: t.id, name: t.name, priority: t.priority, status: t.status })) });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
