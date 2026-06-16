@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { Calendar, Clock, Plus, Filter } from 'lucide-react';
 import TaskForm from '@/components/tasks/TaskForm';
 import BrainDump from '@/components/BrainDump';
+import TaskCard from '@/components/tasks/TaskCard';
+import TaskDetail from '@/components/tasks/TaskDetail';
 import { Button } from '@/components/ui/button';
 
 export default function MyWork() {
@@ -13,6 +15,8 @@ export default function MyWork() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const loadData = async () => {
     const [taskList, clientList, userList] = await Promise.all([
@@ -27,6 +31,10 @@ export default function MyWork() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  const myTasks = tasks.filter(t => t.assigned_to === user?.id);
+  const filteredTasks = statusFilter === 'all' ? myTasks : myTasks.filter(t => t.status === statusFilter);
+  const statuses = ['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'];
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -50,20 +58,39 @@ export default function MyWork() {
         <BrainDump onTasksCreated={loadData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <div className="bg-card rounded-xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-5 h-5" /> Your Schedule</h3>
-            <p className="text-sm text-muted-foreground">Connect your Google Calendar in Settings to see your upcoming events.</p>
-          </div>
-          <div className="bg-card rounded-xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Clock className="w-5 h-5" /> Free Blocks</h3>
-            <p className="text-sm text-muted-foreground">Connect your calendar to see suggested work blocks for your tasks.</p>
-          </div>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <button onClick={() => setStatusFilter('all')} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === 'all' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>All ({myTasks.length})</button>
+          {statuses.map(s => {
+            const count = myTasks.filter(t => t.status === s).length;
+            return (
+              <button key={s} onClick={() => setStatusFilter(s)} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === s ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>{s} ({count})</button>
+            );
+          })}
         </div>
       </div>
 
+      {filteredTasks.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <p className="text-sm">No tasks{statusFilter !== 'all' ? ` with status "${statusFilter}"` : ''}. Use Peter to create some!</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filteredTasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              client={clients.find(c => c.id === task.client_id)}
+              assignee={users.find(u => u.id === task.assigned_to)}
+              onClick={() => setSelectedTask(task)}
+            />
+          ))}
+        </div>
+      )}
+
       {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
+      {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onSaved={() => { setSelectedTask(null); loadData(); }} />}
     </div>
   );
 }
