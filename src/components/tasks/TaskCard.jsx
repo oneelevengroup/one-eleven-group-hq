@@ -18,7 +18,7 @@ const STATUS_COLORS = {
 
 export default function TaskCard({ task, client, assignee, onClick, onDelete }) {
   return (
-    <div onClick={onClick} className={`rounded-lg p-3 border cursor-pointer transition-all hover:shadow-sm group ${task.status === 'URGENT' || task.priority === 'Urgent' ? 'bg-red-100 dark:bg-red-900/50 border-red-300 dark:border-red-700 hover:border-red-400' : 'bg-background/70 border-border hover:border-accent/50'}`}>
+    <div onClick={onClick} className={`rounded-lg p-3 border cursor-pointer transition-all hover:shadow-sm group ${task.status === 'URGENT' || task.priority === 'Urgent' ? 'bg-red-100 dark:bg-red-900/50 border-red-300 dark:border-red-700 hover:border-red-400' : task.due_date === new Date().toISOString().split('T')[0] ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700 hover:border-yellow-400' : 'bg-background/70 border-border hover:border-accent/50'}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <h4 className="font-heading font-bold text-sm text-foreground leading-snug">{task.name}</h4>
         <div className="flex items-center gap-1 shrink-0">
