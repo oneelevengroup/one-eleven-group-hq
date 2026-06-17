@@ -1,14 +1,12 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-const CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
-
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
+    const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
 
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -49,7 +47,6 @@ Deno.serve(async (req) => {
 
     return Response.json({ connected: true, events_today, events_this_week });
   } catch (error) {
-    // If no connection exists for this user, return not connected
     return Response.json({ connected: false, error: error.message });
   }
 });
