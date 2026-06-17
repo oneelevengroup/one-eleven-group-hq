@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { CalendarDays, CheckCircle2, AlertCircle, Clock, Loader2, ExternalLink } from 'lucide-react';
+import { CalendarDays, CheckCircle2, AlertCircle, Clock, Loader2, ListTodo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+const STATUS_DOT = {
+  'URGENT': 'bg-red-400',
+  'To Do': 'bg-slate-400',
+  'In Progress': 'bg-accent',
+  'Stuck': 'bg-amber-400',
+  'Completed': 'bg-green-400',
+};
 
 const CALENDAR_CONNECTOR_ID = '6a31a2611d8d2e3bdb3a55ce';
 
@@ -15,7 +23,8 @@ export default function TodayAtAGlance({ tasks, user }) {
   const todayStr = today.toISOString().split('T')[0];
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
-  const urgent = myTasks.filter(t => t.status === 'URGENT').length;
+  const activeTasks = myTasks.filter(t => t.status !== 'Completed');
+  const urgent = myTasks.filter(t => t.status === 'URGENT' || t.priority === 'Urgent').length;
   const inProgress = myTasks.filter(t => t.status === 'In Progress').length;
   const dueToday = myTasks.filter(t => t.due_date === todayStr).length;
 
@@ -72,37 +81,64 @@ export default function TodayAtAGlance({ tasks, user }) {
         </div>
       </div>
 
-      <div className="border-t pt-4">
-        <div className="flex items-center gap-2 mb-2">
-          <CalendarDays className="w-4 h-4 text-accent" />
-          <h4 className="font-heading font-bold text-sm text-foreground">Today's Schedule</h4>
+      <div className="border-t pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* My Tasks */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ListTodo className="w-4 h-4 text-accent" />
+            <h4 className="font-heading font-bold text-sm text-foreground">My Tasks</h4>
+          </div>
+          {activeTasks.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-1">No active tasks.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {activeTasks.slice(0, 6).map(task => (
+                <div key={task.id} className={`flex items-center gap-2 px-2 py-1 rounded text-xs ${task.status === 'URGENT' || task.priority === 'Urgent' ? 'bg-red-100 dark:bg-red-900/40' : task.due_date === todayStr ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-muted/50'}`}>
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[task.status] || 'bg-slate-400'}`} />
+                  <span className="truncate text-foreground font-medium">{task.name}</span>
+                  <span className="shrink-0 text-muted-foreground ml-auto">{task.status}</span>
+                </div>
+              ))}
+              {activeTasks.length > 6 && (
+                <p className="text-xs text-muted-foreground pl-1">+{activeTasks.length - 6} more tasks</p>
+              )}
+            </div>
+          )}
         </div>
-        {calLoading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading calendar...
+
+        {/* Today's Schedule */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <CalendarDays className="w-4 h-4 text-accent" />
+            <h4 className="font-heading font-bold text-sm text-foreground">Today's Schedule</h4>
           </div>
-        ) : !connected ? (
-          <div className="flex items-center justify-between py-1">
-            <p className="text-xs text-muted-foreground">Connect Google Calendar to see your events</p>
-            <Button variant="outline" size="sm" onClick={handleConnect} className="text-xs h-7">Connect</Button>
-          </div>
-        ) : todayEvents.length === 0 ? (
-          <p className="text-xs text-muted-foreground py-1">No events scheduled today.</p>
-        ) : (
-          <div className="space-y-1">
-            {todayEvents.slice(0, 5).map(evt => (
-              <div key={evt.id} className="flex items-center gap-2 text-sm">
-                <div className="w-1 h-1 rounded-full bg-accent shrink-0" />
-                <span className="truncate">{evt.summary}</span>
-                {evt.start && !evt.allDay && (
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {new Date(evt.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+          {calLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading calendar...
+            </div>
+          ) : !connected ? (
+            <div className="flex items-center justify-between py-1">
+              <p className="text-xs text-muted-foreground">Connect Google Calendar to see your events</p>
+              <Button variant="outline" size="sm" onClick={handleConnect} className="text-xs h-7">Connect</Button>
+            </div>
+          ) : todayEvents.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-1">No events scheduled today.</p>
+          ) : (
+            <div className="space-y-1">
+              {todayEvents.slice(0, 6).map(evt => (
+                <div key={evt.id} className="flex items-center gap-2 text-xs">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                  <span className="truncate text-foreground">{evt.summary}</span>
+                  {evt.start && !evt.allDay && (
+                    <span className="text-muted-foreground shrink-0 ml-auto">
+                      {new Date(evt.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
