@@ -33,7 +33,7 @@ export default function CalendarStrip() {
     const timer = setInterval(() => {
       if (!popup || popup.closed) {
         clearInterval(timer);
-        setTimeout(() => checkCalendar(), 2000);
+        checkCalendar();
       }
     }, 500);
   };
