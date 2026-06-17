@@ -8,7 +8,13 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
+    let accessToken;
+    try {
+      const conn = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
+      accessToken = conn.accessToken;
+    } catch (connErr) {
+      return Response.json({ connected: false, error: connErr.message }, { status: 200 });
+    }
 
     // Fetch today's events from primary calendar
     const now = new Date();
@@ -25,7 +31,8 @@ Deno.serve(async (req) => {
     ]);
 
     if (!todayRes.ok) {
-      return Response.json({ error: 'Failed to fetch calendar', status: todayRes.status }, { status: 500 });
+      const errBody = await todayRes.text();
+      return Response.json({ connected: true, error: `Calendar API error ${todayRes.status}: ${errBody}` }, { status: 500 });
     }
 
     const todayData = await todayRes.json();
@@ -80,6 +87,7 @@ Deno.serve(async (req) => {
     }
 
     return Response.json({
+      connected: true,
       events_today: events,
       free_blocks_today: freeBlocks,
       events_this_week: (weekData.items || []).map(e => ({
