@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { CalendarDays, CheckCircle2, AlertCircle, Clock, Loader2, ListTodo } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const STATUS_DOT = {
   'URGENT': 'bg-red-400',
@@ -10,8 +9,6 @@ const STATUS_DOT = {
   'Stuck': 'bg-amber-400',
   'Completed': 'bg-green-400',
 };
-
-const CALENDAR_CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
 
 export default function TodayAtAGlance({ tasks, user }) {
   const [events, setEvents] = useState([]);
@@ -50,17 +47,7 @@ export default function TodayAtAGlance({ tasks, user }) {
     setCalLoading(false);
   };
 
-  const handleConnect = async () => {
-    const url = await base44.connectors.connectAppUser(CALENDAR_CONNECTOR_ID);
-    const popup = window.open(url, '_blank');
-    const timer = setInterval(() => {
-      if (!popup || popup.closed) {
-        clearInterval(timer);
-        // Wait 2s for the connection to be saved before checking
-        setTimeout(() => checkCalendar(), 2000);
-      }
-    }, 500);
-  };
+
 
   const todayEvents = events.filter(e => {
     const d = e.start ? new Date(e.start).toDateString() : null;
@@ -130,10 +117,7 @@ export default function TodayAtAGlance({ tasks, user }) {
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading calendar...
             </div>
           ) : !connected ? (
-            <div className="flex items-center justify-between py-1">
-              <p className="text-xs text-muted-foreground">Connect Google Calendar to see your events</p>
-              <Button variant="outline" size="sm" onClick={handleConnect} className="text-xs h-7">Connect</Button>
-            </div>
+            <p className="text-xs text-muted-foreground py-1">Calendar unavailable. Please contact your admin.</p>
           ) : todayEvents.length === 0 ? (
             <p className="text-xs text-muted-foreground py-1">No events scheduled today.</p>
           ) : (
