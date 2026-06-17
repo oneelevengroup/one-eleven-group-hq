@@ -24,6 +24,8 @@ export default function TodayAtAGlance({ tasks, user }) {
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
   const activeTasks = myTasks.filter(t => t.status !== 'Completed');
+  const allActiveTasks = tasks.filter(t => t.status !== 'Completed');
+  const displayTasks = activeTasks.length > 0 ? activeTasks : allActiveTasks;
   const urgent = myTasks.filter(t => t.status === 'URGENT' || t.priority === 'Urgent').length;
   const inProgress = myTasks.filter(t => t.status === 'In Progress').length;
   const dueToday = myTasks.filter(t => t.due_date === todayStr).length;
@@ -88,19 +90,20 @@ export default function TodayAtAGlance({ tasks, user }) {
             <ListTodo className="w-4 h-4 text-accent" />
             <h4 className="font-heading font-bold text-sm text-foreground">My Tasks</h4>
           </div>
-          {activeTasks.length === 0 ? (
+          {displayTasks.length === 0 ? (
             <p className="text-xs text-muted-foreground py-1">No active tasks.</p>
           ) : (
             <div className="space-y-1.5">
-              {activeTasks.slice(0, 6).map(task => (
+              {activeTasks.length === 0 && <p className="text-xs text-muted-foreground mb-1">Showing all team tasks</p>}
+              {displayTasks.slice(0, 6).map(task => (
                 <div key={task.id} className={`flex items-center gap-2 px-2 py-1 rounded text-xs ${task.status === 'URGENT' || task.priority === 'Urgent' ? 'bg-red-100 dark:bg-red-900/40' : task.due_date === todayStr ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-muted/50'}`}>
                   <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[task.status] || 'bg-slate-400'}`} />
                   <span className="truncate text-foreground font-medium">{task.name}</span>
                   <span className="shrink-0 text-muted-foreground ml-auto">{task.status}</span>
                 </div>
               ))}
-              {activeTasks.length > 6 && (
-                <p className="text-xs text-muted-foreground pl-1">+{activeTasks.length - 6} more tasks</p>
+              {displayTasks.length > 6 && (
+                <p className="text-xs text-muted-foreground pl-1">+{displayTasks.length - 6} more tasks</p>
               )}
             </div>
           )}
