@@ -18,7 +18,7 @@ const STATUS_COLORS = {
 
 export default function TaskCard({ task, client, assignee, onClick, onDelete }) {
   return (
-    <div onClick={onClick} className="bg-background/70 rounded-lg p-3 border border-border hover:border-accent/50 cursor-pointer transition-all hover:shadow-sm group">
+    <div onClick={onClick} className={`rounded-lg p-3 border cursor-pointer transition-all hover:shadow-sm group ${task.status === 'URGENT' ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 hover:border-red-300' : 'bg-background/70 border-border hover:border-accent/50'}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <h4 className="font-heading font-bold text-sm text-foreground leading-snug">{task.name}</h4>
         <div className="flex items-center gap-1 shrink-0">
