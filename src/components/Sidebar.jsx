@@ -21,9 +21,7 @@ export default function Sidebar() {
     <aside className="w-60 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-30">
       <div className="px-4 py-5">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-accent-foreground font-extrabold text-xs">11</span>
-          </div>
+          <img src="https://media.base44.com/images/public/6a319e757dacbad40bdfaa71/8a545800a_ONEelevenMainLogo.png" alt="One Eleven Group HQ" className="w-8 h-8 rounded-lg flex-shrink-0 object-contain" />
           <div className="min-w-0">
             <h1 className="text-sidebar-foreground font-heading font-extrabold text-xs tracking-wide leading-tight">ONE ELEVEN</h1>
             <p className="text-sidebar-foreground/50 text-[10px] font-semibold tracking-wider uppercase">Group HQ</p>
