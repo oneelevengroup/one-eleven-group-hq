@@ -15,10 +15,11 @@ export default function CalendarStrip() {
   }, []);
 
   const checkCalendar = async () => {
+    setLoading(true);
     try {
       const res = await base44.functions.invoke('getCalendarEvents', {});
       setConnected(res.data?.connected || false);
-      setEvents(res.data?.events || []);
+      setEvents(res.data?.events_today || []);
     } catch {
       setConnected(false);
       setEvents([]);
@@ -32,7 +33,7 @@ export default function CalendarStrip() {
     const timer = setInterval(() => {
       if (!popup || popup.closed) {
         clearInterval(timer);
-        checkCalendar();
+        setTimeout(() => checkCalendar(), 2000);
       }
     }, 500);
   };

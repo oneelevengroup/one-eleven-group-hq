@@ -38,10 +38,11 @@ export default function TodayAtAGlance({ tasks, user }) {
   useEffect(() => { checkCalendar(); }, []);
 
   const checkCalendar = async () => {
+    setCalLoading(true);
     try {
       const res = await base44.functions.invoke('getCalendarEvents', {});
       setConnected(res.data?.connected || false);
-      setEvents(res.data?.events || []);
+      setEvents(res.data?.events_today || []);
     } catch {
       setConnected(false);
       setEvents([]);
@@ -53,7 +54,11 @@ export default function TodayAtAGlance({ tasks, user }) {
     const url = await base44.connectors.connectAppUser(CALENDAR_CONNECTOR_ID);
     const popup = window.open(url, '_blank');
     const timer = setInterval(() => {
-      if (!popup || popup.closed) { clearInterval(timer); checkCalendar(); }
+      if (!popup || popup.closed) {
+        clearInterval(timer);
+        // Wait 2s for the connection to be saved before checking
+        setTimeout(() => checkCalendar(), 2000);
+      }
     }, 500);
   };
 
