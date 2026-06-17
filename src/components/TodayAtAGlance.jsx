@@ -11,7 +11,7 @@ const STATUS_DOT = {
   'Completed': 'bg-green-400',
 };
 
-const CALENDAR_CONNECTOR_ID = '6a31a2611d8d2e3bdb3a55ce';
+const CALENDAR_CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
 
 export default function TodayAtAGlance({ tasks, user }) {
   const [events, setEvents] = useState([]);

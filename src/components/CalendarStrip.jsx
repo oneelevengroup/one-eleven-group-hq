@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Calendar, Clock, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const CALENDAR_CONNECTOR_ID = '6a31a2611d8d2e3bdb3a55ce';
+const CALENDAR_CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
 
 export default function CalendarStrip() {
   const [events, setEvents] = useState([]);
