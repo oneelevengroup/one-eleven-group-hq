@@ -25,7 +25,12 @@ export default function TodayAtAGlance({ tasks, user }) {
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
   const activeTasks = myTasks.filter(t => t.status !== 'Completed');
   const allActiveTasks = tasks.filter(t => t.status !== 'Completed');
-  const displayTasks = activeTasks.length > 0 ? activeTasks : allActiveTasks;
+  const sortTasks = (list) => list.slice().sort((a, b) => {
+    const aTop = a.status === 'URGENT' || a.priority === 'Urgent' || a.due_date === todayStr;
+    const bTop = b.status === 'URGENT' || b.priority === 'Urgent' || b.due_date === todayStr;
+    return (bTop ? 1 : 0) - (aTop ? 1 : 0);
+  });
+  const displayTasks = sortTasks(activeTasks.length > 0 ? activeTasks : allActiveTasks);
   const urgent = myTasks.filter(t => t.status === 'URGENT' || t.priority === 'Urgent').length;
   const inProgress = myTasks.filter(t => t.status === 'In Progress').length;
   const dueToday = myTasks.filter(t => t.due_date === todayStr).length;
