@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Calendar } from 'lucide-react';
 
-const CONNECTOR_ID = '6a31a2611d8d2e3bdb3a55ce';
+const CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -39,8 +39,8 @@ export default function Settings() {
 
   const checkCalendar = async () => {
     try {
-      await base44.functions.invoke('getCalendarEvents', {});
-      setCalendarConnected(true);
+      const res = await base44.functions.invoke('getCalendarEvents', {});
+      setCalendarConnected(res.data?.connected === true);
     } catch {
       setCalendarConnected(false);
     }
