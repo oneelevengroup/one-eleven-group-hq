@@ -76,18 +76,41 @@ export default function MyWork() {
           <p className="text-sm">No tasks{statusFilter !== 'all' ? ` with status "${statusFilter}"` : ''}. Use Peter to create some!</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {filteredTasks.map(task => (
-            <TaskCard
-            key={task.id}
-            task={task}
-            client={clients.find(c => c.id === task.client_id)}
-            assignee={users.find(u => u.id === task.assigned_to)}
-            onClick={() => setSelectedTask(task)}
-            onDelete={async (t) => { await base44.entities.Task.delete(t.id); loadData(); }}
-            onComplete={async (t) => { await base44.entities.Task.update(t.id, { status: 'Completed' }); loadData(); }}
-            />
-          ))}
+        <div className="space-y-6">
+          {(() => {
+            const grouped = filteredTasks.reduce((acc, task) => {
+              const client = clients.find(c => c.id === task.client_id);
+              const key = client ? client.id : '__none__';
+              if (!acc[key]) acc[key] = { client, tasks: [] };
+              acc[key].tasks.push(task);
+              return acc;
+            }, {});
+            return Object.values(grouped).map(({ client, tasks: groupTasks }) => (
+              <div key={client?.id || '__none__'}>
+                <div className="flex items-center gap-2 mb-2">
+                  {client?.color_tag && <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: client.color_tag }} />}
+                  <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">
+                    {client ? client.name : 'No Client'}
+                  </h3>
+                  <span className="text-xs text-muted-foreground">({groupTasks.length})</span>
+                  <div className="flex-1 h-px bg-border ml-1" />
+                </div>
+                <div className="space-y-2">
+                  {groupTasks.map(task => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      client={client}
+                      assignee={users.find(u => u.id === task.assigned_to)}
+                      onClick={() => setSelectedTask(task)}
+                      onDelete={async (t) => { await base44.entities.Task.delete(t.id); loadData(); }}
+                      onComplete={async (t) => { await base44.entities.Task.update(t.id, { status: 'Completed' }); loadData(); }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       )}
 
