@@ -1,18 +1,20 @@
 {
+  "name": "User",
+  "type": "object",
   "properties": {
     "role": {
       "type": "string",
-      "description": "The role of the user in the app",
       "enum": [
         "admin",
         "user"
-      ]
+      ],
+      "default": "user"
     },
     "theme_preference": {
       "type": "string",
       "enum": [
-        "dark",
-        "light"
+        "light",
+        "dark"
       ],
       "default": "dark"
     },
@@ -32,11 +34,9 @@
     "timezone": {
       "type": "string",
       "default": "America/New_York"
+    },
+    "google_calendar_id": {
+      "type": "string"
     }
-  },
-  "required": [
-    "role"
-  ],
-  "name": "User",
-  "type": "object"
+  }
 }

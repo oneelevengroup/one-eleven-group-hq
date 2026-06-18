@@ -4,8 +4,6 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Calendar } from 'lucide-react';
 
-const CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
-
 export default function Settings() {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState({
@@ -17,6 +15,7 @@ export default function Settings() {
   const [calendarConnected, setCalendarConnected] = useState(false);
   const [calendarLoading, setCalendarLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [googleCalendarId, setGoogleCalendarId] = useState('');
 
   useEffect(() => {
     loadPreferences();
@@ -33,6 +32,7 @@ export default function Settings() {
           phone_number: me.phone_number || '',
           timezone: me.timezone || 'America/New_York',
         });
+        setGoogleCalendarId(me.google_calendar_id || '');
       }
     } catch {}
   };
@@ -49,25 +49,11 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe(preferences);
+    await base44.auth.updateMe({ ...preferences, google_calendar_id: googleCalendarId });
     setSaving(false);
+    checkCalendar();
   };
 
-  const handleConnectCalendar = async () => {
-    const url = await base44.connectors.connectAppUser(CONNECTOR_ID);
-    const popup = window.open(url, '_blank');
-    const timer = setInterval(() => {
-      if (!popup || popup.closed) {
-        clearInterval(timer);
-        checkCalendar();
-      }
-    }, 500);
-  };
-
-  const handleDisconnectCalendar = async () => {
-    await base44.connectors.disconnectAppUser(CONNECTOR_ID);
-    setCalendarConnected(false);
-  };
 
   return (
     <div>
@@ -109,22 +95,26 @@ export default function Settings() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-5 h-5" /> Google Calendar</h3>
+          <p className="text-sm text-muted-foreground mb-3">
+            Enter your Google Calendar ID to see your personal events on the dashboard. Find it in Google Calendar → Settings → your calendar → <strong>Calendar ID</strong> (looks like an email address or ends in <code className="bg-muted px-1 rounded text-xs">@group.calendar.google.com</code>).
+          </p>
+          <input
+            type="text"
+            value={googleCalendarId}
+            onChange={e => setGoogleCalendarId(e.target.value)}
+            placeholder="yourname@gmail.com or calendar-id@group.calendar.google.com"
+            className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+          />
           {calendarLoading ? (
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-              <span className="text-sm text-muted-foreground">Checking connection...</span>
+            <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+              <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+              Checking...
             </div>
           ) : calendarConnected ? (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-green-400 font-medium">✓ Connected</p>
-              <Button variant="outline" size="sm" onClick={handleDisconnectCalendar} className="border-border text-sm">Disconnect</Button>
-            </div>
-          ) : (
-            <div>
-              <p className="text-sm text-muted-foreground mb-3">Connect your Google Calendar to see today's events and get suggested free blocks for task work.</p>
-              <Button onClick={handleConnectCalendar} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">Connect Calendar</Button>
-            </div>
-          )}
+            <p className="text-sm text-green-400 font-medium mt-2">✓ Calendar connected — save preferences to update</p>
+          ) : googleCalendarId ? (
+            <p className="text-sm text-amber-400 mt-2">⚠ Save preferences to connect this calendar</p>
+          ) : null}
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
