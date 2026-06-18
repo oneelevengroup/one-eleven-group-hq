@@ -92,7 +92,7 @@ export default function MyWork() {
       )}
 
       {showTaskForm && <TaskForm clients={clients} users={users} currentUser={user} onClose={() => setShowTaskForm(false)} onSaved={() => { setShowTaskForm(false); loadData(); }} />}
-      {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onSaved={() => { setSelectedTask(null); loadData(); }} />}
+      {selectedTask && <TaskDetail task={selectedTask} clients={clients} users={users} currentUser={user} onClose={() => setSelectedTask(null)} onSaved={() => { setSelectedTask(null); loadData(); }} onUpdated={() => { setSelectedTask(null); loadData(); }} />}
     </div>
   );
 }
