@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { CalendarDays, CheckCircle2, AlertCircle, Clock, Loader2, ListTodo } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
-const CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
 
 const STATUS_DOT = {
   'URGENT': 'bg-red-400',
@@ -15,7 +12,6 @@ const STATUS_DOT = {
 
 export default function TodayAtAGlance({ tasks, user }) {
   const [events, setEvents] = useState([]);
-  const [connected, setConnected] = useState(false);
   const [calLoading, setCalLoading] = useState(true);
 
   const today = new Date();
@@ -35,38 +31,12 @@ export default function TodayAtAGlance({ tasks, user }) {
   const inProgress = myTasks.filter(t => t.status === 'In Progress').length;
   const dueToday = myTasks.filter(t => t.due_date === todayStr).length;
 
-  useEffect(() => { checkCalendar(); }, []);
-
-  const handleConnect = async () => {
-    const url = await base44.connectors.connectAppUser(CONNECTOR_ID);
-    const popup = window.open(url, '_blank');
-    const timer = setInterval(() => {
-      if (!popup || popup.closed) {
-        clearInterval(timer);
-        checkCalendar();
-      }
-    }, 500);
-  };
-
-  const checkCalendar = async () => {
-    setCalLoading(true);
-    try {
-      const res = await base44.functions.invoke('getCalendarEvents', {});
-      setConnected(res.data?.connected || false);
-      setEvents(res.data?.events_today || []);
-    } catch {
-      setConnected(false);
-      setEvents([]);
-    }
-    setCalLoading(false);
-  };
-
-
-
-  const todayEvents = events.filter(e => {
-    const d = e.start ? new Date(e.start).toDateString() : null;
-    return d === today.toDateString();
-  });
+  useEffect(() => {
+    base44.functions.invoke('getCalendarEvents', {})
+      .then(res => setEvents(res.data?.events_today || []))
+      .catch(() => setEvents([]))
+      .finally(() => setCalLoading(false));
+  }, []);
 
   return (
     <div className="bg-card rounded-xl border border-border p-5">
@@ -130,16 +100,11 @@ export default function TodayAtAGlance({ tasks, user }) {
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading calendar...
             </div>
-          ) : !connected ? (
-            <div className="flex items-center justify-between py-1">
-              <p className="text-xs text-muted-foreground">Connect your Google Calendar to see today's events.</p>
-              <Button variant="outline" size="sm" onClick={handleConnect} className="text-xs h-7 shrink-0 ml-2">Connect</Button>
-            </div>
-          ) : todayEvents.length === 0 ? (
+          ) : events.length === 0 ? (
             <p className="text-xs text-muted-foreground py-1">No events scheduled today.</p>
           ) : (
             <div className="space-y-1">
-              {todayEvents.slice(0, 6).map(evt => (
+              {events.slice(0, 6).map(evt => (
                 <div key={evt.id} className="flex items-center gap-2 text-xs">
                   <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
                   <span className="truncate text-foreground">{evt.summary}</span>
