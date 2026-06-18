@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb } from 'lucide-react';
+import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
+import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { label: 'The Motherboard', path: '/', icon: LayoutDashboard },
@@ -16,6 +17,7 @@ const navItems = [
 export default function Sidebar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const handleLogout = () => base44.auth.logout('/login');
 
   return (
     <aside className="w-60 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-30">
@@ -68,6 +70,13 @@ export default function Sidebar() {
         >
           {theme === 'dark' ? <Sun className="w-4.5 h-4.5 flex-shrink-0" /> : <Moon className="w-4.5 h-4.5 flex-shrink-0" />}
           {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+        </button>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-sidebar-accent/50 w-full transition-colors"
+        >
+          <LogOut className="w-4.5 h-4.5 flex-shrink-0" />
+          Log Out
         </button>
       </div>
     </aside>
