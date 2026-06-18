@@ -16,6 +16,7 @@ export default function Settings() {
   const [calendarLoading, setCalendarLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [googleCalendarId, setGoogleCalendarId] = useState('');
+  const [calendarEmbedSrc, setCalendarEmbedSrc] = useState('');
 
   useEffect(() => {
     loadPreferences();
@@ -33,6 +34,7 @@ export default function Settings() {
           timezone: me.timezone || 'America/New_York',
         });
         setGoogleCalendarId(me.google_calendar_id || '');
+        setCalendarEmbedSrc(me.calendar_embed_src || '');
       }
     } catch {}
   };
@@ -49,7 +51,7 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe({ ...preferences, google_calendar_id: googleCalendarId });
+    await base44.auth.updateMe({ ...preferences, google_calendar_id: googleCalendarId, calendar_embed_src: calendarEmbedSrc });
     setSaving(false);
     checkCalendar();
   };
@@ -96,7 +98,7 @@ export default function Settings() {
         <div className="bg-card rounded-xl border border-border p-6">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-5 h-5" /> Google Calendar</h3>
           <p className="text-sm text-muted-foreground mb-3">
-            Enter your Google Calendar ID to see your personal events on the dashboard. Find it in Google Calendar → Settings → your calendar → <strong>Calendar ID</strong> (looks like an email address or ends in <code className="bg-muted px-1 rounded text-xs">@group.calendar.google.com</code>).
+            Enter your Google Calendar ID to see your personal events on the dashboard. Find it in Google Calendar → Settings → your calendar → <strong>Calendar ID</strong>.
           </p>
           <input
             type="text"
@@ -105,6 +107,17 @@ export default function Settings() {
             placeholder="yourname@gmail.com or calendar-id@group.calendar.google.com"
             className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
           />
+          <div className="mt-4">
+            <label className="text-sm font-medium text-foreground block mb-1.5">Calendar Embed URL</label>
+            <p className="text-xs text-muted-foreground mb-2">Paste the <code className="bg-muted px-1 rounded">src</code> value from your Google Calendar embed iframe (Google Calendar → Settings → your calendar → Integrate calendar → copy the URL inside <code className="bg-muted px-1 rounded">src="..."</code>).</p>
+            <input
+              type="text"
+              value={calendarEmbedSrc}
+              onChange={e => setCalendarEmbedSrc(e.target.value)}
+              placeholder="https://calendar.google.com/calendar/embed?src=..."
+              className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+            />
+          </div>
           {calendarLoading ? (
             <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
               <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />

@@ -33,6 +33,7 @@ export default function MyWork() {
   useEffect(() => { loadData(); }, []);
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
+  const calendarEmbedSrc = user?.calendar_embed_src || null;
   const isUrgent = (t) => (t.status === 'URGENT' || t.priority === 'Urgent') && t.status !== 'Completed';
   const filteredTasks = statusFilter === 'all'
     ? myTasks
@@ -120,6 +121,23 @@ export default function MyWork() {
               </div>
             ));
           })()}
+        </div>
+      )}
+
+      {calendarEmbedSrc && (
+        <div className="mt-10">
+          <h2 className="text-lg font-heading font-bold text-foreground mb-3">My Calendar</h2>
+          <div className="rounded-xl overflow-hidden border border-border">
+            <iframe
+              src={calendarEmbedSrc}
+              style={{ border: 0 }}
+              width="100%"
+              height="600"
+              frameBorder="0"
+              scrolling="no"
+              title="My Calendar"
+            />
+          </div>
         </div>
       )}
 
