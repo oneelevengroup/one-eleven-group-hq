@@ -16,7 +16,7 @@ export default function MyWork() {
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [statusFilter, setStatusFilter] = useState('To Do');
+  const [statusFilter, setStatusFilter] = useState('URGENT');
 
   const loadData = async () => {
     const [taskList, clientList, userList] = await Promise.all([
