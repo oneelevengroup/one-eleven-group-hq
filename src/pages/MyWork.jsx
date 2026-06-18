@@ -33,7 +33,12 @@ export default function MyWork() {
   useEffect(() => { loadData(); }, []);
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
-  const filteredTasks = statusFilter === 'all' ? myTasks : myTasks.filter(t => t.status === statusFilter);
+  const isUrgent = (t) => t.status === 'URGENT' || t.priority === 'Urgent';
+  const filteredTasks = statusFilter === 'all'
+    ? myTasks
+    : statusFilter === 'URGENT'
+      ? myTasks.filter(isUrgent)
+      : myTasks.filter(t => t.status === statusFilter && !isUrgent(t));
   const statuses = ['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'];
 
   if (loading) return (
@@ -62,7 +67,9 @@ export default function MyWork() {
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-muted-foreground" />
           {statuses.map(s => {
-            const count = myTasks.filter(t => t.status === s).length;
+            const count = s === 'URGENT'
+              ? myTasks.filter(isUrgent).length
+              : myTasks.filter(t => t.status === s && !isUrgent(t)).length;
             return (
               <button key={s} onClick={() => setStatusFilter(s)} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === s ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>{s} ({count})</button>
             );
