@@ -25,10 +25,10 @@ export default function TaskCard({ task, client, assignee, onClick, onDelete, on
           {onComplete && task.status !== 'Completed' && (
             <button
               onClick={e => { e.stopPropagation(); onComplete(task); }}
-              className="text-muted-foreground/40 hover:text-green-500 transition-colors opacity-0 group-hover:opacity-100"
+              className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md bg-green-500/15 text-green-600 dark:text-green-400 hover:bg-green-500 hover:text-white transition-colors"
               title="Mark complete"
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-4 h-4" /> Done
             </button>
           )}
           {onDelete && (
