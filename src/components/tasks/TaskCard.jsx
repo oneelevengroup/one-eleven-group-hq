@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, User, Trash2 } from 'lucide-react';
+import { Calendar, User, Trash2, CheckCircle2 } from 'lucide-react';
 
 const PRIORITY_COLORS = {
   Low: 'bg-slate-500/10 text-slate-400',
@@ -16,12 +16,21 @@ const STATUS_COLORS = {
   'Completed': 'bg-green-500/10 text-green-400',
 };
 
-export default function TaskCard({ task, client, assignee, onClick, onDelete }) {
+export default function TaskCard({ task, client, assignee, onClick, onDelete, onComplete }) {
   return (
     <div onClick={onClick} className={`rounded-lg p-3 border cursor-pointer transition-all hover:shadow-sm group ${task.status === 'URGENT' || task.priority === 'Urgent' ? 'bg-red-100 dark:bg-red-900/50 border-red-300 dark:border-red-700 hover:border-red-400' : task.due_date === new Date().toISOString().split('T')[0] ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700 hover:border-yellow-400' : 'bg-background/70 border-border hover:border-accent/50'}`}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <h4 className="font-heading font-bold text-sm text-foreground leading-snug">{task.name}</h4>
         <div className="flex items-center gap-1 shrink-0">
+          {onComplete && task.status !== 'Completed' && (
+            <button
+              onClick={e => { e.stopPropagation(); onComplete(task); }}
+              className="text-muted-foreground/40 hover:text-green-500 transition-colors opacity-0 group-hover:opacity-100"
+              title="Mark complete"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </button>
+          )}
           {onDelete && (
             <button
               onClick={e => { e.stopPropagation(); onDelete(task); }}

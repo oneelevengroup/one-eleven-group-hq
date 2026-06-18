@@ -85,6 +85,7 @@ export default function MyWork() {
             assignee={users.find(u => u.id === task.assigned_to)}
             onClick={() => setSelectedTask(task)}
             onDelete={async (t) => { await base44.entities.Task.delete(t.id); loadData(); }}
+            onComplete={async (t) => { await base44.entities.Task.update(t.id, { status: 'Completed' }); loadData(); }}
             />
           ))}
         </div>
