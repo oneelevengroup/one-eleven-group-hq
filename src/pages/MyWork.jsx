@@ -33,12 +33,14 @@ export default function MyWork() {
   useEffect(() => { loadData(); }, []);
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
-  const isUrgent = (t) => t.status === 'URGENT' || t.priority === 'Urgent';
+  const isUrgent = (t) => (t.status === 'URGENT' || t.priority === 'Urgent') && t.status !== 'Completed';
   const filteredTasks = statusFilter === 'all'
     ? myTasks
     : statusFilter === 'URGENT'
       ? myTasks.filter(isUrgent)
-      : myTasks.filter(t => t.status === statusFilter && !isUrgent(t));
+      : statusFilter === 'Completed'
+        ? myTasks.filter(t => t.status === 'Completed')
+        : myTasks.filter(t => t.status === statusFilter && !isUrgent(t));
   const statuses = ['URGENT', 'To Do', 'In Progress', 'Stuck', 'Completed'];
 
   if (loading) return (
