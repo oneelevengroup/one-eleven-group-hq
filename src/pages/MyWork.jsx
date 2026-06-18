@@ -16,7 +16,7 @@ export default function MyWork() {
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('To Do');
 
   const loadData = async () => {
     const [taskList, clientList, userList] = await Promise.all([
@@ -61,13 +61,13 @@ export default function MyWork() {
       <div className="mb-6">
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-muted-foreground" />
-          <button onClick={() => setStatusFilter('all')} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === 'all' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>All ({myTasks.length})</button>
           {statuses.map(s => {
             const count = myTasks.filter(t => t.status === s).length;
             return (
               <button key={s} onClick={() => setStatusFilter(s)} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === s ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>{s} ({count})</button>
             );
           })}
+          <button onClick={() => setStatusFilter('all')} className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${statusFilter === 'all' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>All ({myTasks.length})</button>
         </div>
       </div>
 
