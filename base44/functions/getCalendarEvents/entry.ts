@@ -8,10 +8,11 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Resolve THIS user's APP_USER Google Calendar connection (request-scoped, so the
-    // runtime knows whose connection to look up). Do NOT use asServiceRole here — it would
-    // drop the user context and there is no shared workspace connection for an APP_USER connector.
-    const { accessToken } = await base44.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
+    // Resolve THIS user's APP_USER Google Calendar connection. base44 is built from
+    // createClientFromRequest(req) above, so it carries the user's JWT and the runtime knows
+    // whose connection to resolve; asServiceRole is what's permitted to read the connector store.
+    // (Per Base44 docs: base44.asServiceRole.connectors.getCurrentAppUserConnection(connectorId).)
+    const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
 
     // Use the user's stored calendar ID, or fall back to primary
     const calendarId = user.google_calendar_id || 'primary';
