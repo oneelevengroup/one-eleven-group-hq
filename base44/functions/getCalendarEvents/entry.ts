@@ -8,8 +8,10 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Use the workspace-level BYO_SHARED connection
-    const { accessToken } = await base44.asServiceRole.connectors.getWorkspaceConnection(CONNECTOR_ID);
+    // Resolve THIS user's APP_USER Google Calendar connection (request-scoped, so the
+    // runtime knows whose connection to look up). Do NOT use asServiceRole here — it would
+    // drop the user context and there is no shared workspace connection for an APP_USER connector.
+    const { accessToken } = await base44.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
 
     // Use the user's stored calendar ID, or fall back to primary
     const calendarId = user.google_calendar_id || 'primary';
