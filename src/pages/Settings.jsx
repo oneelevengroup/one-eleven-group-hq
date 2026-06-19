@@ -35,8 +35,15 @@ export default function Settings() {
           phone_number: me.phone_number || '',
           timezone: me.timezone || 'America/New_York',
         });
-        setGoogleCalendarId(me.google_calendar_id || '');
-        setCalendarEmbedSrc(me.calendar_embed_src || '');
+        // Load custom fields from the User entity (auth.me() doesn't return them)
+        if (me.id) {
+          const userList = await base44.entities.User.filter({ id: me.id });
+          const entityUser = userList[0];
+          if (entityUser) {
+            setGoogleCalendarId(entityUser.google_calendar_id || '');
+            setCalendarEmbedSrc(entityUser.calendar_embed_src || '');
+          }
+        }
       }
     } catch {}
   };
