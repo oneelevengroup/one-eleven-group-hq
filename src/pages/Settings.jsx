@@ -4,6 +4,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Calendar } from 'lucide-react';
 
+const CALENDAR_CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
+
 export default function Settings() {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState({
@@ -47,6 +49,21 @@ export default function Settings() {
       setCalendarConnected(false);
     }
     setCalendarLoading(false);
+  };
+
+  const handleConnectCalendar = async () => {
+    try {
+      const url = await base44.connectors.connectAppUser(CALENDAR_CONNECTOR_ID);
+      const popup = window.open(url, '_blank');
+      const timer = setInterval(() => {
+        if (!popup || popup.closed) {
+          clearInterval(timer);
+          checkCalendar();
+        }
+      }, 500);
+    } catch {
+      // user closed the consent window or connect failed; status check will reflect it
+    }
   };
 
   const handleSave = async () => {
@@ -129,10 +146,15 @@ export default function Settings() {
               Checking...
             </div>
           ) : calendarConnected ? (
-            <p className="text-sm text-green-400 font-medium mt-2">✓ Calendar connected — save preferences to update</p>
-          ) : googleCalendarId ? (
-            <p className="text-sm text-amber-400 mt-2">⚠ Save preferences to connect this calendar</p>
-          ) : null}
+            <p className="text-sm text-green-400 font-medium mt-2">✓ Google Calendar connected</p>
+          ) : (
+            <div className="mt-3 flex items-center gap-3">
+              <Button variant="outline" size="sm" onClick={handleConnectCalendar}>
+                Connect Google Calendar
+              </Button>
+              <span className="text-xs text-muted-foreground">Authorize access to pull your events onto the dashboard.</span>
+            </div>
+          )}
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
