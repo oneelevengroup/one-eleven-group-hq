@@ -20,16 +20,18 @@ export default function MyWork() {
   const [statusFilter, setStatusFilter] = useState('URGENT');
 
   const loadData = async () => {
-    const [taskList, clientList, userList, me] = await Promise.all([
+    const [taskList, clientList, userList] = await Promise.all([
       base44.entities.Task.list('-created_date'),
       base44.entities.Client.list(),
       base44.entities.User.list(),
-      base44.auth.me(),
     ]);
     setTasks(taskList);
     setClients(clientList);
     setUsers(userList);
-    setFullUser(me);
+    if (user?.id) {
+      const entityUser = userList.find(u => u.id === user.id);
+      setFullUser(entityUser || null);
+    }
     setLoading(false);
   };
 
