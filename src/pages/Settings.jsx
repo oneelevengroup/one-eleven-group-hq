@@ -51,7 +51,12 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe({ ...preferences, google_calendar_id: googleCalendarId, calendar_embed_src: calendarEmbedSrc });
+    const updateData = { ...preferences, google_calendar_id: googleCalendarId, calendar_embed_src: calendarEmbedSrc };
+    await base44.auth.updateMe(updateData);
+    // Also persist via entity to ensure custom fields are saved
+    if (user?.id) {
+      await base44.entities.User.update(user.id, updateData);
+    }
     setSaving(false);
     checkCalendar();
   };

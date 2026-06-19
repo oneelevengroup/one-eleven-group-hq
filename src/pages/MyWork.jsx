@@ -14,26 +14,29 @@ export default function MyWork() {
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fullUser, setFullUser] = useState(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [statusFilter, setStatusFilter] = useState('URGENT');
 
   const loadData = async () => {
-    const [taskList, clientList, userList] = await Promise.all([
+    const [taskList, clientList, userList, me] = await Promise.all([
       base44.entities.Task.list('-created_date'),
       base44.entities.Client.list(),
       base44.entities.User.list(),
+      base44.auth.me(),
     ]);
     setTasks(taskList);
     setClients(clientList);
     setUsers(userList);
+    setFullUser(me);
     setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
-  const calendarEmbedSrc = user?.calendar_embed_src || null;
+  const calendarEmbedSrc = fullUser?.calendar_embed_src || null;
   const isUrgent = (t) => (t.status === 'URGENT' || t.priority === 'Urgent') && t.status !== 'Completed';
   const filteredTasks = statusFilter === 'all'
     ? myTasks
