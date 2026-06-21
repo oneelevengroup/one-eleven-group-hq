@@ -7,6 +7,7 @@ import TaskForm from '@/components/tasks/TaskForm';
 import LeadCard from '@/components/leads/LeadCard';
 import BrainDump from '@/components/BrainDump';
 import TodayAtAGlance from '@/components/TodayAtAGlance';
+import PeterCard from '@/components/PeterCard';
 import { Button } from '@/components/ui/button';
 import { getDisplayName } from '@/lib/utils';
 
@@ -66,6 +67,10 @@ export default function TrafficControl() {
 
       <div className="mb-8">
         <BrainDump onTasksCreated={loadData} />
+      </div>
+
+      <div className="mb-8">
+        <PeterCard />
       </div>
 
       <div className="mb-8">

@@ -16,6 +16,10 @@
       "items": {
         "type": "string"
       }
+    },
+    "peter_processed": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
