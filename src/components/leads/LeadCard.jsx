@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Calendar, ChevronRight } from 'lucide-react';
+import { getDisplayName } from '@/lib/utils';
 
 const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
 
@@ -47,7 +48,7 @@ export default function LeadCard({ lead, owner, onStatusChange }) {
       <div className="flex items-center gap-4 flex-shrink-0">
         {owner && (
           <span className="text-xs text-muted-foreground flex items-center gap-1">
-            <User className="w-3 h-3" /> {owner.full_name}
+            <User className="w-3 h-3" /> {getDisplayName(owner)}
           </span>
         )}
         {lead.next_followup_date && (

@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { ArrowLeft, Plus, User, Users, Briefcase, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
@@ -38,7 +39,7 @@ export default function ClientDetail() {
   useEffect(() => { loadData(); }, [id]);
 
   const getClientObj = (cid) => clients.find(c => c.id === cid);
-  const getStaffNames = (staffIds) => (staffIds || []).map(sid => users.find(u => u.id === sid)?.full_name || sid).filter(Boolean);
+  const getStaffNames = (staffIds) => (staffIds || []).map(sid => { const u = users.find(u => u.id === sid); return u ? getDisplayName(u) : sid; }).filter(Boolean);
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">

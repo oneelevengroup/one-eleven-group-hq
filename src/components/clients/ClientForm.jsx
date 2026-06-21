@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import { X } from 'lucide-react';
 
 const TAG_COLORS = ['#A5F8D3', '#60A5FA', '#F472B6', '#FBBF24', '#A78BFA', '#FB923C', '#34D399', '#F87171'];
@@ -99,7 +100,7 @@ export default function ClientForm({ client, users, onClose, onSaved }) {
                           : 'bg-muted text-muted-foreground border-border hover:text-foreground'
                       }`}
                     >
-                      {u.full_name}
+                      {getDisplayName(u)}
                     </button>
                   );
                 })}

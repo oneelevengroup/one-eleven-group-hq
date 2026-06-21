@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import { X } from 'lucide-react';
 
 const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
@@ -66,7 +67,7 @@ export default function LeadForm({ lead, users, onClose, onSaved }) {
               <label className="text-sm font-medium text-foreground block mb-1.5">Assigned To</label>
               <select value={form.assigned_to} onChange={e => setForm({...form, assigned_to: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
                 <option value="">Select team member</option>
-                {users.map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
+                {users.map(u => <option key={u.id} value={u.id}>{getDisplayName(u)}</option>)}
               </select>
             </div>
             <div>

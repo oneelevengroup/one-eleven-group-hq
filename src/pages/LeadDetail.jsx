@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Phone, Mail, Calendar, Plus, Save, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import TouchpointForm from '@/components/leads/TouchpointForm';
 import LeadForm from '@/components/leads/LeadForm';
 
@@ -79,7 +80,7 @@ export default function LeadDetail() {
         </div>
         <div className="bg-card rounded-xl border border-border p-5">
           <h3 className="font-heading font-bold text-sm text-foreground mb-3">Details</h3>
-          <p className="text-sm text-muted-foreground"><span className="text-foreground font-medium">Owner:</span> {owner?.full_name || 'Unassigned'}</p>
+          <p className="text-sm text-muted-foreground"><span className="text-foreground font-medium">Owner:</span> {owner ? getDisplayName(owner) : 'Unassigned'}</p>
           {lead.next_followup_date && <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {new Date(lead.next_followup_date).toLocaleDateString()}</p>}
         </div>
         <div className="bg-card rounded-xl border border-border p-5">
