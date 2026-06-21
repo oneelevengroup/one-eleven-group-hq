@@ -94,11 +94,9 @@ export default function Responsibilities() {
           <h1 className="text-3xl font-heading font-extrabold text-foreground flex items-center gap-2"><Repeat className="w-7 h-7 text-accent" /> Ongoing Responsibilities</h1>
           <p className="text-muted-foreground mt-1">Team board · Week {currentWeek}</p>
         </div>
-        {isAdmin && (
-          <Button onClick={() => { setEditing(null); setShowForm(true); }} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
-            <Plus className="w-4 h-4 mr-2" /> New Responsibility
-          </Button>
-        )}
+        <Button onClick={() => { setEditing(null); setShowForm(true); }} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
+          <Plus className="w-4 h-4 mr-2" /> New Responsibility
+        </Button>
       </div>
 
       <p className={`text-xs mb-5 flex items-center gap-1.5 ${pastDeadline ? 'text-red-500 font-semibold' : 'text-muted-foreground'}`}>
@@ -135,7 +133,7 @@ export default function Responsibilities() {
                       client={clients.find(c => c.id === r.client_id)}
                       doneThisWeek={isDone(r)}
                       canToggle={isMe || isAdmin}
-                      isAdmin={isAdmin}
+                      canEdit={isMe || isAdmin}
                       onToggle={handleToggleComplete}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
@@ -154,6 +152,7 @@ export default function Responsibilities() {
           users={users}
           currentUser={user}
           existing={editing}
+          isAdmin={isAdmin}
           onClose={() => { setShowForm(false); setEditing(null); }}
           onSaved={() => { setShowForm(false); setEditing(null); loadData(); }}
         />

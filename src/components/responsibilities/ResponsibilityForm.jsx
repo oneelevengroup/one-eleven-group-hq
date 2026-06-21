@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 
-export default function ResponsibilityForm({ clients, users, currentUser, existing, onClose, onSaved }) {
+export default function ResponsibilityForm({ clients, users, currentUser, existing, isAdmin, onClose, onSaved }) {
   const [form, setForm] = useState(existing ? {
     description: existing.description || '',
     client_id: existing.client_id || '',
@@ -21,11 +21,12 @@ export default function ResponsibilityForm({ clients, users, currentUser, existi
     if (!form.description.trim() || !form.assigned_to) return;
     setSaving(true);
     try {
+      const payload = { ...form, assigned_to: isAdmin ? form.assigned_to : (currentUser?.email || '') };
       if (existing) {
-        await base44.entities.OngoingResponsibility.update(existing.id, form);
+        await base44.entities.OngoingResponsibility.update(existing.id, payload);
       } else {
         await base44.entities.OngoingResponsibility.create({
-          ...form,
+          ...payload,
           created_by: currentUser?.email || '',
           completed_week: '',
         });
@@ -55,9 +56,13 @@ export default function ResponsibilityForm({ clients, users, currentUser, existi
           </div>
           <div>
             <label className="text-sm font-medium text-foreground block mb-1.5">Assigned To</label>
-            <select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" required>
-              {users.map(u => <option key={u.id} value={u.email}>{u.full_name}</option>)}
-            </select>
+            {isAdmin ? (
+              <select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" required>
+                {users.map(u => <option key={u.id} value={u.email}>{u.full_name}</option>)}
+              </select>
+            ) : (
+              <input value={currentUser?.full_name || currentUser?.email || ''} disabled className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-muted-foreground cursor-not-allowed" />
+            )}
           </div>
           <label className="flex items-center gap-2 text-sm text-foreground">
             <input type="checkbox" checked={form.active} onChange={e => setForm({ ...form, active: e.target.checked })} className="rounded" />

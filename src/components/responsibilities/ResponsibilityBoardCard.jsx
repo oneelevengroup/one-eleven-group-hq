@@ -1,10 +1,10 @@
 import React from 'react';
 import { Check, Pencil, Trash2 } from 'lucide-react';
 
-export default function ResponsibilityBoardCard({ responsibility, client, doneThisWeek, canToggle, isAdmin, onToggle, onEdit, onDelete }) {
+export default function ResponsibilityBoardCard({ responsibility, client, doneThisWeek, canToggle, canEdit, onToggle, onEdit, onDelete }) {
   return (
     <div className={`group relative rounded-lg border p-3 transition-colors ${doneThisWeek ? 'bg-green-500/10 border-green-500/30' : 'bg-card border-border'}`}>
-      {isAdmin && (
+      {canEdit && (
         <div className="absolute top-1.5 right-1.5 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button onClick={() => onEdit(responsibility)} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Edit">
             <Pencil className="w-3 h-3" />
