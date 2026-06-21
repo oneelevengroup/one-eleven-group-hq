@@ -8,8 +8,8 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Use the platform SHARED connector (authorized via dashboard)
-    const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+    // Per-user (APP_USER) connection: resolve THIS user's stored OAuth token.
+    const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CONNECTOR_ID);
 
     // Use the user's stored calendar ID, or fall back to primary
     const calendarId = user.google_calendar_id || 'primary';
