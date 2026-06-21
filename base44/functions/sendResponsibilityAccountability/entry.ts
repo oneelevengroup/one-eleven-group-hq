@@ -1,13 +1,18 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-// Returns the ISO week id for a date, e.g. "2026-W25".
-const getISOWeek = (date = new Date()) => {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+// Returns the ISO week id for the America/New_York local date, e.g. "2026-W25".
+// Week runs Monday-Sunday and resets Monday 00:00 ET.
+const getETWeekId = (date = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(date);
+  const y = Number(parts.find(p => p.type === 'year').value);
+  const m = Number(parts.find(p => p.type === 'month').value);
+  const d = Number(parts.find(p => p.type === 'day').value);
+  const local = new Date(Date.UTC(y, m - 1, d));
+  const dayNum = local.getUTCDay() || 7;
+  local.setUTCDate(local.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(local.getUTCFullYear(), 0, 1));
+  const weekNum = Math.ceil((((local - yearStart) / 86400000) + 1) / 7);
+  return `${local.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
 };
 
 Deno.serve(async (req) => {
@@ -22,7 +27,7 @@ Deno.serve(async (req) => {
       base44.asServiceRole.entities.User.list(),
     ]);
 
-    const currentWeek = getISOWeek();
+    const currentWeek = getETWeekId();
     const active = responsibilities.filter(r => r.active);
     const clientName = (id) => (clients.find(c => c.id === id) || {}).name || 'No client';
     const isDone = (r) => r.completed_week === currentWeek;

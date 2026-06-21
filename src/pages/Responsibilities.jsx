@@ -7,14 +7,25 @@ import ResponsibilityCard from '@/components/responsibilities/ResponsibilityCard
 import MyResponsibilityItem from '@/components/responsibilities/MyResponsibilityItem';
 import { Button } from '@/components/ui/button';
 
-// Returns the ISO week id for a date, e.g. "2026-W25".
-const getISOWeek = (date = new Date()) => {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+// Week runs Monday-Sunday, resets Monday 00:00 America/New_York. Deadline Friday 5:00pm ET.
+const getETInfo = (date = new Date()) => {
+  const dateParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(date);
+  const y = Number(dateParts.find(p => p.type === 'year').value);
+  const m = Number(dateParts.find(p => p.type === 'month').value);
+  const d = Number(dateParts.find(p => p.type === 'day').value);
+  const local = new Date(Date.UTC(y, m - 1, d));
+  const weekday = local.getUTCDay(); // 0=Sun..6=Sat
+  const tmp = new Date(Date.UTC(y, m - 1, d));
+  const dayNum = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+  const weekNum = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  const weekId = `${tmp.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+  const timeParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(date);
+  const hour = Number(timeParts.find(p => p.type === 'hour').value) % 24;
+  const minute = Number(timeParts.find(p => p.type === 'minute').value);
+  const pastDeadline = weekday === 0 || weekday === 6 || (weekday === 5 && (hour * 60 + minute) >= 17 * 60);
+  return { weekId, pastDeadline };
 };
 
 export default function Responsibilities() {
@@ -27,7 +38,7 @@ export default function Responsibilities() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  const currentWeek = getISOWeek();
+  const { weekId: currentWeek, pastDeadline } = getETInfo();
   const isDone = (r) => r.completed_week === currentWeek;
 
   const loadData = async () => {
@@ -111,8 +122,8 @@ export default function Responsibilities() {
           <h3 className="font-heading font-bold text-foreground">My Ongoing Responsibilities</h3>
           <span className="text-sm font-semibold text-foreground">{myDone} of {myItems.length} done this week</span>
         </div>
-        <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5" /> Deadline: Friday 5pm ET — complete all items by then.
+        <p className={`text-xs mb-4 flex items-center gap-1.5 ${pastDeadline ? 'text-red-500 font-semibold' : 'text-muted-foreground'}`}>
+          <Clock className="w-3.5 h-3.5" /> {pastDeadline ? 'Deadline passed (Friday 5:00pm ET) — please complete ASAP.' : 'Deadline: Friday 5:00pm ET — complete all items by then.'}
         </p>
         {myItems.length === 0 ? (
           <p className="text-sm text-muted-foreground py-6 text-center">You have no active ongoing responsibilities this week. 🎉</p>
