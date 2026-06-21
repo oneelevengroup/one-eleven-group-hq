@@ -4,8 +4,6 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Bell, Calendar } from 'lucide-react';
 
-const CALENDAR_CONNECTOR_ID = '6a32c760705912ec06ba2cc2';
-
 export default function Settings() {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState({
@@ -14,15 +12,11 @@ export default function Settings() {
     phone_number: '',
     timezone: 'America/New_York',
   });
-  const [calendarConnected, setCalendarConnected] = useState(false);
-  const [calendarLoading, setCalendarLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [googleCalendarId, setGoogleCalendarId] = useState('');
   const [calendarEmbedSrc, setCalendarEmbedSrc] = useState('');
 
   useEffect(() => {
     loadPreferences();
-    checkCalendar();
   }, []);
 
   const loadPreferences = async () => {
@@ -35,12 +29,10 @@ export default function Settings() {
           phone_number: me.phone_number || '',
           timezone: me.timezone || 'America/New_York',
         });
-        // Load custom fields from the User entity (auth.me() doesn't return them)
         if (me.id) {
           const userList = await base44.entities.User.filter({ id: me.id });
           const entityUser = userList[0];
           if (entityUser) {
-            setGoogleCalendarId(entityUser.google_calendar_id || '');
             setCalendarEmbedSrc(entityUser.calendar_embed_src || '');
           }
         }
@@ -48,43 +40,15 @@ export default function Settings() {
     } catch {}
   };
 
-  const checkCalendar = async () => {
-    try {
-      const res = await base44.functions.invoke('getCalendarEvents', {});
-      setCalendarConnected(res.data?.connected === true);
-    } catch {
-      setCalendarConnected(false);
-    }
-    setCalendarLoading(false);
-  };
-
-  const handleConnectCalendar = async () => {
-    try {
-      const url = await base44.connectors.connectAppUser(CALENDAR_CONNECTOR_ID);
-      const popup = window.open(url, '_blank');
-      const timer = setInterval(() => {
-        if (!popup || popup.closed) {
-          clearInterval(timer);
-          checkCalendar();
-        }
-      }, 500);
-    } catch {
-      // user closed the consent window or connect failed; status check will reflect it
-    }
-  };
-
   const handleSave = async () => {
     setSaving(true);
-    const updateData = { ...preferences, google_calendar_id: googleCalendarId, calendar_embed_src: calendarEmbedSrc };
+    const updateData = { ...preferences, calendar_embed_src: calendarEmbedSrc };
     await base44.auth.updateMe(updateData);
-    // Also persist via entity to ensure custom fields are saved
     if (user?.id) {
       await base44.entities.User.update(user.id, updateData);
     }
     setSaving(false);
-    checkCalendar();
   };
-
 
   return (
     <div>
@@ -126,42 +90,15 @@ export default function Settings() {
 
         <div className="bg-card rounded-xl border border-border p-6">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-5 h-5" /> Google Calendar</h3>
-          <p className="text-sm text-muted-foreground mb-3">
-            Enter your Google Calendar ID to see your personal events on the dashboard. Find it in Google Calendar → Settings → your calendar → <strong>Calendar ID</strong>.
-          </p>
+          <label className="text-sm font-medium text-foreground block mb-1.5">Calendar Embed URL</label>
+          <p className="text-xs text-muted-foreground mb-2">Paste the <code className="bg-muted px-1 rounded">src</code> value from your Google Calendar embed iframe (Google Calendar → Settings → your calendar → Integrate calendar → copy the URL inside <code className="bg-muted px-1 rounded">src="..."</code>). Each user adds their own to see their personal calendar on the dashboard.</p>
           <input
             type="text"
-            value={googleCalendarId}
-            onChange={e => setGoogleCalendarId(e.target.value)}
-            placeholder="yourname@gmail.com or calendar-id@group.calendar.google.com"
+            value={calendarEmbedSrc}
+            onChange={e => setCalendarEmbedSrc(e.target.value)}
+            placeholder="https://calendar.google.com/calendar/embed?src=..."
             className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
           />
-          <div className="mt-4">
-            <label className="text-sm font-medium text-foreground block mb-1.5">Calendar Embed URL</label>
-            <p className="text-xs text-muted-foreground mb-2">Paste the <code className="bg-muted px-1 rounded">src</code> value from your Google Calendar embed iframe (Google Calendar → Settings → your calendar → Integrate calendar → copy the URL inside <code className="bg-muted px-1 rounded">src="..."</code>).</p>
-            <input
-              type="text"
-              value={calendarEmbedSrc}
-              onChange={e => setCalendarEmbedSrc(e.target.value)}
-              placeholder="https://calendar.google.com/calendar/embed?src=..."
-              className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
-            />
-          </div>
-          {calendarLoading ? (
-            <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-              <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-              Checking...
-            </div>
-          ) : calendarConnected ? (
-            <p className="text-sm text-green-400 font-medium mt-2">✓ Google Calendar connected</p>
-          ) : (
-            <div className="mt-3 flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={handleConnectCalendar}>
-                Connect Google Calendar
-              </Button>
-              <span className="text-xs text-muted-foreground">Authorize access to pull your events onto the dashboard.</span>
-            </div>
-          )}
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
