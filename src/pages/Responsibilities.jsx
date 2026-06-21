@@ -6,43 +6,35 @@ import ResponsibilityForm from '@/components/responsibilities/ResponsibilityForm
 import ResponsibilityCard from '@/components/responsibilities/ResponsibilityCard';
 import { Button } from '@/components/ui/button';
 
-// Returns [Monday, Sunday] of the current week as Date objects.
-const getWeekRange = (date = new Date()) => {
-  const d = new Date(date);
-  const day = d.getDay(); // 0=Sun..6=Sat
-  const diffToMonday = (day + 6) % 7;
-  const monday = new Date(d);
-  monday.setDate(d.getDate() - diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
-  return [monday, sunday];
-};
-
-const isDoneThisWeek = (r) => {
-  if (!r.last_completed_date) return false;
-  const completed = new Date(r.last_completed_date);
-  const [mon, sun] = getWeekRange();
-  return completed >= mon && completed <= sun;
+// Returns the ISO week id for a date, e.g. "2026-W25".
+const getISOWeek = (date = new Date()) => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
 };
 
 export default function Responsibilities() {
   const { user } = useAuth();
-  const [responsibilities, setResponsibilities] = useState([]);
+  const [items, setItems] = useState([]);
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [filter, setFilter] = useState('all'); // all | mine | pending
+  const [filter, setFilter] = useState('all');
+
+  const currentWeek = getISOWeek();
+  const isDone = (r) => r.completed_week === currentWeek;
 
   const loadData = async () => {
     const [respList, clientList, userList] = await Promise.all([
-      base44.entities.Responsibility.list('-created_date'),
+      base44.entities.OngoingResponsibility.list('-created_date'),
       base44.entities.Client.list(),
       base44.entities.User.list(),
     ]);
-    setResponsibilities(respList.map(r => ({ ...r, doneThisWeek: isDoneThisWeek(r) })));
+    setItems(respList.map(r => ({ ...r, doneThisWeek: isDone(r) })));
     setClients(clientList);
     setUsers(userList);
     setLoading(false);
@@ -51,25 +43,24 @@ export default function Responsibilities() {
   useEffect(() => { loadData(); }, []);
 
   const handleComplete = async (r) => {
-    await base44.entities.Responsibility.update(r.id, { last_completed_date: new Date().toISOString().split('T')[0] });
+    await base44.entities.OngoingResponsibility.update(r.id, { completed_week: currentWeek });
     loadData();
   };
   const handleDelete = async (r) => {
-    await base44.entities.Responsibility.delete(r.id);
+    await base44.entities.OngoingResponsibility.delete(r.id);
     loadData();
   };
   const handleToggleActive = async (r) => {
-    await base44.entities.Responsibility.update(r.id, { active: !r.active });
+    await base44.entities.OngoingResponsibility.update(r.id, { active: !r.active });
     loadData();
   };
 
-  const filtered = responsibilities.filter(r => {
-    if (filter === 'mine') return r.assigned_to === user?.id;
+  const filtered = items.filter(r => {
+    if (filter === 'mine') return r.assigned_to === user?.email;
     if (filter === 'pending') return r.active && !r.doneThisWeek;
     return true;
   });
 
-  // Group by assigned user
   const grouped = filtered.reduce((acc, r) => {
     if (!acc[r.assigned_to]) acc[r.assigned_to] = [];
     acc[r.assigned_to].push(r);
@@ -87,7 +78,7 @@ export default function Responsibilities() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-heading font-extrabold text-foreground flex items-center gap-2"><Repeat className="w-7 h-7 text-accent" /> Ongoing Responsibilities</h1>
-          <p className="text-muted-foreground mt-1">Recurring weekly client tasks, tracked per staff member</p>
+          <p className="text-muted-foreground mt-1">Recurring weekly client tasks, tracked per staff member · Week {currentWeek}</p>
         </div>
         <Button onClick={() => setShowForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
           <Plus className="w-4 h-4 mr-2" /> New Responsibility
@@ -107,19 +98,19 @@ export default function Responsibilities() {
         </div>
       ) : (
         <div className="space-y-6">
-          {Object.entries(grouped).map(([userId, items]) => {
-            const u = users.find(x => x.id === userId);
-            const pendingCount = items.filter(r => r.active && !r.doneThisWeek).length;
+          {Object.entries(grouped).map(([email, list]) => {
+            const u = users.find(x => x.email === email);
+            const pendingCount = list.filter(r => r.active && !r.doneThisWeek).length;
             return (
-              <div key={userId}>
+              <div key={email}>
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">{u ? u.full_name : 'Unassigned'}</h3>
-                  <span className="text-xs text-muted-foreground">({items.length})</span>
+                  <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">{u ? u.full_name : email}</h3>
+                  <span className="text-xs text-muted-foreground">({list.length})</span>
                   {pendingCount > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500">{pendingCount} pending</span>}
                   <div className="flex-1 h-px bg-border ml-1" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {items.map(r => (
+                  {list.map(r => (
                     <ResponsibilityCard
                       key={r.id}
                       responsibility={r}

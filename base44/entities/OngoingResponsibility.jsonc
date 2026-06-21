@@ -1,0 +1,30 @@
+{
+  "name": "OngoingResponsibility",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "completed_week": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "required": [
+    "description",
+    "assigned_to"
+  ]
+}
