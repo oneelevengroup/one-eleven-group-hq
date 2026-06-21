@@ -8,6 +8,7 @@ import LeadCard from '@/components/leads/LeadCard';
 import BrainDump from '@/components/BrainDump';
 import TodayAtAGlance from '@/components/TodayAtAGlance';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 
 export default function TrafficControl() {
   const { user } = useAuth();
@@ -77,7 +78,7 @@ export default function TrafficControl() {
           <div className="space-y-2">
             {users.map(u => (
               <p key={u.id} className="text-sm text-muted-foreground">
-                <span className="text-foreground font-medium">{u.full_name}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
+                <span className="text-foreground font-medium">{getDisplayName(u)}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
               </p>
             ))}
           </div>

@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { Calendar, Plus, Send, Users, Zap, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import { format } from 'date-fns';
 
 export default function TeamMeetings() {
@@ -187,7 +188,7 @@ export default function TeamMeetings() {
                     const member = users.find(u => u.id === sub.user_id);
                     return (
                       <div key={sub.id} className="bg-muted/50 rounded-lg p-4">
-                        <p className="text-sm font-semibold text-foreground mb-3">{member?.full_name || 'Team Member'}</p>
+                        <p className="text-sm font-semibold text-foreground mb-3">{getDisplayName(member) || 'Team Member'}</p>
                         {sub.hot_topics && (
                           <div className="mb-2">
                             <p className="text-xs font-semibold text-muted-foreground mb-1">🔥 Hot Topics</p>
@@ -231,7 +232,7 @@ export default function TeamMeetings() {
                       ) : (
                         <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 flex-shrink-0" />
                       )}
-                      <span className={hasSubmitted ? 'text-foreground' : 'text-muted-foreground'}>{u.full_name}</span>
+                      <span className={hasSubmitted ? 'text-foreground' : 'text-muted-foreground'}>{getDisplayName(u)}</span>
                     </div>
                   );
                 })}

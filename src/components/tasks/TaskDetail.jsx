@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import { X, Calendar, User, Send } from 'lucide-react';
 
 const PRIORITY_COLORS = { Low: 'bg-slate-500/10 text-slate-400', Medium: 'bg-blue-500/10 text-blue-400', High: 'bg-orange-500/10 text-orange-400', Urgent: 'bg-red-500/10 text-red-400' };
@@ -40,7 +41,7 @@ export default function TaskDetail({ task, clients, users, currentUser, onClose,
 
   const addComment = async () => {
     if (!newComment.trim()) return;
-    await base44.entities.Comment.create({ task_id: task.id, author: currentUser?.full_name || 'Team Member', body: newComment });
+    await base44.entities.Comment.create({ task_id: task.id, author: getDisplayName(currentUser) || 'Team Member', body: newComment });
     setNewComment('');
     loadComments();
   };
@@ -66,8 +67,8 @@ export default function TaskDetail({ task, clients, users, currentUser, onClose,
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            {assignee && <p className="text-muted-foreground flex items-center gap-1.5"><User className="w-4 h-4" /> <span className="text-foreground font-medium">Assigned to:</span> {assignee.full_name}</p>}
-            {assigner && <p className="text-muted-foreground flex items-center gap-1.5"><User className="w-4 h-4" /> <span className="text-foreground font-medium">Assigned by:</span> {assigner.full_name}</p>}
+            {assignee && <p className="text-muted-foreground flex items-center gap-1.5"><User className="w-4 h-4" /> <span className="text-foreground font-medium">Assigned to:</span> {getDisplayName(assignee)}</p>}
+            {assigner && <p className="text-muted-foreground flex items-center gap-1.5"><User className="w-4 h-4" /> <span className="text-foreground font-medium">Assigned by:</span> {getDisplayName(assigner)}</p>}
             {task.due_date && <p className="text-muted-foreground flex items-center gap-1.5"><Calendar className="w-4 h-4" /> <span className="text-foreground font-medium">Due:</span> {new Date(task.due_date).toLocaleDateString()}</p>}
           </div>
 
@@ -96,7 +97,7 @@ export default function TaskDetail({ task, clients, users, currentUser, onClose,
                 </select>
                 <select value={editForm.assigned_to} onChange={e => setEditForm({...editForm, assigned_to: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground">
                   <option value="">Unassigned</option>
-                  {users.map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
+                  {users.map(u => <option key={u.id} value={u.id}>{getDisplayName(u)}</option>)}
                 </select>
                 <input type="date" value={editForm.due_date} onChange={e => setEditForm({...editForm, due_date: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground" />
               </div>

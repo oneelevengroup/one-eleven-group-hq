@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, User, Trash2, CheckCircle2 } from 'lucide-react';
+import { getDisplayName } from '@/lib/utils';
 
 const PRIORITY_COLORS = {
   Low: 'bg-slate-500/10 text-slate-400',
@@ -55,7 +56,7 @@ export default function TaskCard({ task, client, assignee, onClick, onDelete, on
           <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(task.due_date).toLocaleDateString()}</span>
         )}
         {assignee && (
-          <span className="text-[10px] text-muted-foreground flex items-center gap-1"><User className="w-3 h-3" /> {assignee.full_name}</span>
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1"><User className="w-3 h-3" /> {getDisplayName(assignee)}</span>
         )}
       </div>
     </div>

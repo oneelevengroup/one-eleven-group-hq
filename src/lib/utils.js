@@ -7,3 +7,5 @@ export function cn(...inputs) {
 
 
 export const isIframe = window.self !== window.top;
+
+export const getDisplayName = (user) => user?.display_name || user?.full_name || user?.email || '';

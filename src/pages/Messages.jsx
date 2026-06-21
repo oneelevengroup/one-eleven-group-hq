@@ -4,6 +4,7 @@ import ConversationList from '@/components/messaging/ConversationList';
 import MessageBubble from '@/components/messaging/MessageBubble';
 import MessageInput from '@/components/messaging/MessageInput';
 import { Hash, Lock } from 'lucide-react';
+import { getDisplayName } from '@/lib/utils';
 
 export default function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -25,7 +26,7 @@ export default function Messages() {
       if (event.type === 'create' && event.data.conversation_id === selectedId) {
         setMessages(prev => {
           if (prev.find(m => m.id === event.data.id)) return prev;
-          return [...prev, { ...event.data, sender_name: users.find(u => u.id === event.data.sender_id)?.full_name }];
+          return [...prev, { ...event.data, sender_name: getDisplayName(users.find(u => u.id === event.data.sender_id)) }];
         });
         setTimeout(scrollToBottom, 100);
       }
@@ -55,7 +56,7 @@ export default function Messages() {
     const msgs = await base44.entities.Message.filter({ conversation_id: conversationId }, 'created_date', 100);
     setMessages(msgs.map(m => ({
       ...m,
-      sender_name: users.find(u => u.id === m.sender_id)?.full_name,
+      sender_name: getDisplayName(users.find(u => u.id === m.sender_id)),
     })));
   };
 
@@ -139,7 +140,7 @@ export default function Messages() {
               )}
               <div>
                 <h2 className="font-heading font-bold text-sm text-foreground">
-                  {isChannel ? selectedConv.name : dmOtherUser?.full_name || 'Direct Message'}
+                  {isChannel ? selectedConv.name : getDisplayName(dmOtherUser) || 'Direct Message'}
                 </h2>
                 {isChannel && selectedConv.description && (
                   <p className="text-[11px] text-muted-foreground">{selectedConv.description}</p>

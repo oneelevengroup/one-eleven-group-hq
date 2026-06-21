@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Hash, Lock, Plus, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 
 export default function ConversationList({ conversations, users, currentUser, selectedId, onSelect, onCreated }) {
   const [showNew, setShowNew] = useState(null);
@@ -114,7 +115,7 @@ export default function ConversationList({ conversations, users, currentUser, se
                 <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${selectedId === c.id ? 'bg-accent-foreground/20' : 'bg-white/10'}`}>
                   <Lock className={`w-2.5 h-2.5 ${selectedId === c.id ? 'text-accent-foreground' : 'text-accent'}`} />
                 </div>
-                <span className="truncate">{otherUser?.full_name || 'Unknown'}</span>
+                <span className="truncate">{getDisplayName(otherUser) || 'Unknown'}</span>
               </button>
             );
           })}
@@ -155,7 +156,7 @@ export default function ConversationList({ conversations, users, currentUser, se
                 >
                   <option value="">Select team member</option>
                   {otherUsers.map(u => (
-                    <option key={u.id} value={u.id}>{u.full_name}</option>
+                    <option key={u.id} value={u.id}>{getDisplayName(u)}</option>
                   ))}
                 </select>
                 <Button size="sm" onClick={handleStartDM} disabled={!dmUserId || creating} className="w-full bg-accent text-accent-foreground">

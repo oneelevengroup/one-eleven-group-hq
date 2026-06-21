@@ -7,6 +7,7 @@ import { Bell, Calendar } from 'lucide-react';
 export default function Settings() {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState({
+    display_name: '',
     theme_preference: 'dark',
     notification_preference: 'email',
     phone_number: '',
@@ -24,6 +25,7 @@ export default function Settings() {
       const me = await base44.auth.me();
       if (me) {
         setPreferences({
+          display_name: me.display_name || '',
           theme_preference: me.theme_preference || 'dark',
           notification_preference: me.notification_preference || 'email',
           phone_number: me.phone_number || '',
@@ -58,6 +60,13 @@ export default function Settings() {
       </div>
 
       <div className="max-w-2xl space-y-6">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="font-heading font-bold text-foreground mb-4">Profile</h3>
+          <label className="text-sm font-medium text-foreground block mb-1.5">Display Name</label>
+          <p className="text-xs text-muted-foreground mb-2">Shown across the app instead of your account name when set.</p>
+          <input type="text" value={preferences.display_name} onChange={e => setPreferences({...preferences, display_name: e.target.value})} placeholder="e.g. Katie Garwood" className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" />
+        </div>
+
         <div className="bg-card rounded-xl border border-border p-6">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Bell className="w-5 h-5" /> Daily Briefing</h3>
           <div className="space-y-4">

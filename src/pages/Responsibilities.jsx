@@ -5,6 +5,7 @@ import { Plus, Repeat, Clock } from 'lucide-react';
 import ResponsibilityForm from '@/components/responsibilities/ResponsibilityForm';
 import ResponsibilityBoardCard from '@/components/responsibilities/ResponsibilityBoardCard';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 
 // Week runs Monday-Sunday, resets Monday 00:00 America/New_York. Deadline Friday 5:00pm ET.
 const getETInfo = (date = new Date()) => {
@@ -119,7 +120,7 @@ export default function Responsibilities() {
               <div key={u.id} className="w-72 shrink-0">
                 <div className={`rounded-xl border p-3 mb-2 ${isMe ? 'bg-accent/15 border-accent/40' : 'bg-card border-border'}`}>
                   <h3 className="font-heading font-bold text-sm text-foreground truncate">
-                    {u.full_name || u.email}{isMe && <span className="text-xs text-accent font-semibold ml-1.5">(You)</span>}
+                    {getDisplayName(u)}{isMe && <span className="text-xs text-accent font-semibold ml-1.5">(You)</span>}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     <span className="font-semibold text-foreground">{done}</span> of {userItems.length} done this week
