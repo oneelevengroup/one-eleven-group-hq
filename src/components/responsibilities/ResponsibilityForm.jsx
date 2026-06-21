@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 
-export default function ResponsibilityForm({ clients, users, currentUser, onClose, onSaved }) {
-  const [form, setForm] = useState({
+export default function ResponsibilityForm({ clients, users, currentUser, existing, onClose, onSaved }) {
+  const [form, setForm] = useState(existing ? {
+    description: existing.description || '',
+    client_id: existing.client_id || '',
+    assigned_to: existing.assigned_to || '',
+    active: existing.active !== false,
+  } : {
     description: '',
     client_id: '',
     assigned_to: currentUser?.email || '',
@@ -16,11 +21,15 @@ export default function ResponsibilityForm({ clients, users, currentUser, onClos
     if (!form.description.trim() || !form.assigned_to) return;
     setSaving(true);
     try {
-      await base44.entities.OngoingResponsibility.create({
-        ...form,
-        created_by: currentUser?.email || '',
-        completed_week: '',
-      });
+      if (existing) {
+        await base44.entities.OngoingResponsibility.update(existing.id, form);
+      } else {
+        await base44.entities.OngoingResponsibility.create({
+          ...form,
+          created_by: currentUser?.email || '',
+          completed_week: '',
+        });
+      }
       onSaved();
     } catch (err) {
       console.error(err);
@@ -31,7 +40,7 @@ export default function ResponsibilityForm({ clients, users, currentUser, onClos
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-card rounded-xl border border-border p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
-        <h3 className="font-heading font-bold text-lg text-foreground mb-4">New Ongoing Responsibility</h3>
+        <h3 className="font-heading font-bold text-lg text-foreground mb-4">{existing ? 'Edit' : 'New'} Ongoing Responsibility</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium text-foreground block mb-1.5">Description</label>
@@ -56,7 +65,7 @@ export default function ResponsibilityForm({ clients, users, currentUser, onClos
           </label>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">{saving ? 'Saving...' : 'Create'}</Button>
+            <Button type="submit" disabled={saving} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">{saving ? 'Saving...' : existing ? 'Save' : 'Create'}</Button>
           </div>
         </form>
       </div>

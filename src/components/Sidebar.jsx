@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Clients', path: '/clients', icon: Building2 },
   { label: 'Leads', path: '/leads', icon: Target },
   { label: 'Team Meetings', path: '/team-meetings', icon: Users },
-  { label: 'Responsibilities', path: '/responsibilities', icon: Repeat },
+  { label: 'Ongoing Responsibilities', path: '/responsibilities', icon: Repeat },
   { label: 'Messages', path: '/messages', icon: MessageSquare },
   { label: 'Bright Ideas', path: '/bright-ideas', icon: Lightbulb },
 ];
