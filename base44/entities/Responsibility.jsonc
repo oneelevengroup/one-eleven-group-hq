@@ -1,0 +1,44 @@
+{
+  "name": "Responsibility",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "default": "Monday"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_completed_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "name",
+    "assigned_to",
+    "day_of_week"
+  ]
+}

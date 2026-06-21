@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut } from 'lucide-react';
+import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut, Repeat } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
 import { base44 } from '@/api/base44Client';
 
@@ -10,6 +10,7 @@ const navItems = [
   { label: 'Clients', path: '/clients', icon: Building2 },
   { label: 'Leads', path: '/leads', icon: Target },
   { label: 'Team Meetings', path: '/team-meetings', icon: Users },
+  { label: 'Responsibilities', path: '/responsibilities', icon: Repeat },
   { label: 'Messages', path: '/messages', icon: MessageSquare },
   { label: 'Bright Ideas', path: '/bright-ideas', icon: Lightbulb },
 ];
