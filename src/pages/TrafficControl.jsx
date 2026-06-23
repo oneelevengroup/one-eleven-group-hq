@@ -20,17 +20,19 @@ export default function TrafficControl() {
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
 
+  const isAdmin = user?.role === 'admin';
+
   const loadData = async () => {
-    const [taskList, clientList, userList, leadList] = await Promise.all([
+    const results = await Promise.allSettled([
       base44.entities.Task.list('-created_date'),
       base44.entities.Client.list(),
-      base44.entities.User.list(),
+      isAdmin ? base44.entities.User.list() : Promise.resolve([]),
       base44.entities.Lead.list('-created_date'),
     ]);
-    setTasks(taskList);
-    setClients(clientList);
-    setUsers(userList);
-    setLeads(leadList);
+    setTasks(results[0].status === 'fulfilled' ? results[0].value : []);
+    setClients(results[1].status === 'fulfilled' ? results[1].value : []);
+    setUsers(results[2].status === 'fulfilled' ? results[2].value : []);
+    setLeads(results[3].status === 'fulfilled' ? results[3].value : []);
     setLoading(false);
   };
 
@@ -77,17 +79,19 @@ export default function TrafficControl() {
         <TodayAtAGlance tasks={tasks} user={user} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-card rounded-xl border border-border p-5">
-          <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
-          <div className="space-y-2">
-            {users.map(u => (
-              <p key={u.id} className="text-sm text-muted-foreground">
-                <span className="text-foreground font-medium">{getDisplayName(u)}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
-              </p>
-            ))}
+      <div className={`grid gap-4 mb-8 ${isAdmin ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+        {isAdmin && (
+          <div className="bg-card rounded-xl border border-border p-5">
+            <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Users className="w-5 h-5" /> Teammate Workload</h3>
+            <div className="space-y-2">
+              {users.map(u => (
+                <p key={u.id} className="text-sm text-muted-foreground">
+                  <span className="text-foreground font-medium">{getDisplayName(u)}</span> - Current Workload: {workload[u.id] || 0} task{(workload[u.id] || 0) !== 1 ? 's' : ''}
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="bg-card rounded-xl border border-border p-5">
           <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2"><Target className="w-5 h-5" /> Active Pipeline</h3>
