@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut, Repeat } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
 import { base44 } from '@/api/base44Client';
+import { useNotifications } from '@/lib/useNotifications';
 
 const navItems = [
   { label: 'The Motherboard', path: '/', icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const navItems = [
 export default function Sidebar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { unreadCount } = useNotifications();
   const handleLogout = () => base44.auth.logout('/login');
 
   return (
@@ -48,6 +50,11 @@ export default function Sidebar() {
             >
               <Icon className="w-4.5 h-4.5 flex-shrink-0" />
               {item.label}
+              {item.path === '/messages' && unreadCount > 0 && (
+                <span className="ml-auto min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </Link>
           );
         })}

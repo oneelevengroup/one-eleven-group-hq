@@ -17,8 +17,30 @@ export default function Messages() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const convId = params.get('conv');
+    if (convId) setSelectedId(convId);
     loadData();
   }, []);
+
+  // Mark notifications as read when viewing a conversation
+  useEffect(() => {
+    if (!selectedId || !currentUser) return;
+    (async () => {
+      try {
+        const notifs = await base44.entities.Notification.filter({
+          user_id: currentUser.id,
+          conversation_id: selectedId,
+          read: false,
+        });
+        for (const n of notifs) {
+          await base44.entities.Notification.update(n.id, { read: true });
+        }
+      } catch (err) {
+        // Silent fail — don't break messaging
+      }
+    })();
+  }, [selectedId, currentUser]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -174,7 +196,7 @@ export default function Messages() {
             </div>
 
             {/* Input */}
-            <MessageInput onSend={handleSend} />
+            <MessageInput onSend={handleSend} users={users} />
           </>
         ) : (
           /* Empty state on desktop */
