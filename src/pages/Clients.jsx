@@ -4,6 +4,7 @@ import { Plus, ChevronRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ClientForm from '@/components/clients/ClientForm';
+import SocialPlatforms from '@/components/clients/SocialPlatforms';
 import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function Clients() {
@@ -68,6 +69,7 @@ export default function Clients() {
               <Link key={client.id} to={`/clients/${client.id}`} className="flex items-center gap-4 bg-card rounded-xl border border-border px-5 py-4 hover:border-accent/50 transition-colors group">
                 {client.color_tag && <span className="w-4 h-4 rounded-full flex-shrink-0" style={{backgroundColor: client.color_tag}} />}
                 <h3 className="font-heading font-bold text-foreground text-base flex-1">{client.name}</h3>
+                <SocialPlatforms platforms={client.social_platforms} size="w-4 h-4" />
                 <div className="flex items-center gap-3 text-sm flex-shrink-0">
                   <span className="text-muted-foreground">{counts.total} task{counts.total !== 1 ? 's' : ''}</span>
                   {counts.open > 0 && <span className="text-accent font-semibold">{counts.open} open</span>}

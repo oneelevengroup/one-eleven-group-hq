@@ -34,6 +34,32 @@
       },
       "default": []
     },
+    "social_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Instagram",
+          "Facebook",
+          "Reddit",
+          "LinkedIn",
+          "Threads",
+          "X (Twitter)",
+          "YouTube Long Form",
+          "YouTube Short Form",
+          "TikTok",
+          "Substack"
+        ]
+      },
+      "default": []
+    },
+    "file_attachments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
     "notes": {
       "type": "string"
     },

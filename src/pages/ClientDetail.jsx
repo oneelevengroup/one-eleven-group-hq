@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { ArrowLeft, Plus, User, Users, Briefcase, FileText } from 'lucide-react';
+import { ArrowLeft, Plus, User, Users, Briefcase, FileText, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getDisplayName } from '@/lib/utils';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
 import ClientForm from '@/components/clients/ClientForm';
+import SocialPlatforms from '@/components/clients/SocialPlatforms';
+import ClientFiles from '@/components/clients/ClientFiles';
 import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function ClientDetail() {
@@ -128,6 +130,22 @@ export default function ClientDetail() {
           </div>
         </div>
       )}
+
+      {client.social_platforms?.length > 0 && (
+        <div className="bg-card rounded-xl border border-border p-4 mb-6 flex items-start gap-3">
+          <Share2 className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Social Platforms</p>
+            <div className="flex flex-wrap gap-2.5">
+              {client.social_platforms.map(platform => (
+                <SocialPlatforms key={platform} platforms={[platform]} size="w-5 h-5" />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ClientFiles client={client} onUpdated={(updated) => setClient(updated)} />
 
       {client.notes && (
         <div className="bg-card rounded-xl border border-border p-5 mb-6">
