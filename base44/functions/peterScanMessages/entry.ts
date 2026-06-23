@@ -46,16 +46,18 @@ Deno.serve(async (req) => {
       const sender = users.find(u => u.id === m.sender_id);
       const senderName = sender?.display_name || sender?.full_name || 'Someone';
       const convName = conv?.name || (conv?.type === 'direct' ? 'Direct Message' : 'Conversation');
-      return `[${convName}] ${senderName}: ${m.content || ''}`;
+      return `[${convName}] ${senderName} (sender_id:${m.sender_id}): ${m.content || ''}`;
     }).join('\n');
 
     const prompt = `You are Peter the Task Rabbit, an assistant that scans team chat messages and extracts actionable to-do items.
 
-Below are recent messages from a team workspace. Identify any clear action items, tasks, or to-dos that someone should do. For each, capture a concise task description (imperative, e.g. "Send invoice to Acme") and the name of the person responsible — the person who is @mentioned or explicitly named as the one who should do it. If no specific person is responsible, set responsible_person to an empty string.
+Below are recent messages from a team workspace. Identify any clear action items, tasks, or to-dos that someone should do. For each, capture a concise task description (imperative, e.g. "Send invoice to Acme"), the sender_id (echo back the sender_id from the message this todo came from), and assign_to_name.
+
+CRITICAL RULE for assign_to_name: ONLY fill assign_to_name when the message text contains an explicit "assign to [name]" directive (e.g. "follow up with Tyson, assign to Maddie" → assign_to_name is "Maddie"). Do NOT infer the assignee from mentions or from who the task seems to be "for". If there is no "assign to" directive, leave assign_to_name as an empty string — the task defaults to the sender.
 
 Only extract genuine to-dos / action items. Ignore questions, status updates, casual chat, jokes, and statements with no actionable commitment. If there are no to-dos, return an empty array.
 
-Team members (match responsible_person to one of these names when possible): ${teamNames}
+Team members (match assign_to_name to one of these names when possible): ${teamNames}
 
 Messages:
 ${ctx}
@@ -73,9 +75,10 @@ Return JSON with a "todos" array, each item having "description" (string) and "r
               type: 'object',
               properties: {
                 description: { type: 'string' },
-                responsible_person: { type: 'string' },
+                sender_id: { type: 'string' },
+                assign_to_name: { type: 'string' },
               },
-              required: ['description'],
+              required: ['description', 'sender_id'],
             },
           },
         },
@@ -88,10 +91,11 @@ Return JSON with a "todos" array, each item having "description" (string) and "r
     for (const todo of todos) {
       const desc = (todo.description || '').trim();
       if (!desc) continue;
-      const assignee = matchUser(todo.responsible_person, users);
+      const assignee = matchUser(todo.assign_to_name, users);
+      const defaultAssignee = todo.sender_id || '';
       await base44.asServiceRole.entities.Task.create({
         name: desc,
-        assigned_to: assignee?.id || '',
+        assigned_to: assignee?.id || defaultAssignee,
         assigned_by: '',
         status: 'To Do',
         priority: 'Medium',

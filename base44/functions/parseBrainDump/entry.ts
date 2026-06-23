@@ -52,7 +52,7 @@ Available clients: ${JSON.stringify(clientNames)}
 For each task, extract:
 - name: a clear, concise task name
 - client_id: if the task mentions a specific client, match it to one from the available clients list (exact name match). Leave as null if no client is mentioned.
-- responsible_person: the name of the person who is responsible for doing this task — the person who is named or implied as the one who should do it (e.g. "Maddie follow up with Tyson" → responsible_person is "Maddie"). Leave as empty string if no specific person is named.
+- assign_to_name: ONLY fill this if the text contains an explicit "assign to [name]" directive (e.g. "follow up with Tyson, assign to Maddie" → assign_to_name is "Maddie"). Leave as empty string otherwise. Do NOT infer the assignee from mentions or from who the task seems to be "for". The task creator is the default assignee.
 - priority: "Low", "Medium", "High", or "Urgent" based on urgency cues in the text
 - due_date: if a date or timeframe is mentioned, return as YYYY-MM-DD (use 2026 as current year if no year specified). Use null if not mentioned.
 - notes: any additional details or context
@@ -63,9 +63,9 @@ Rules:
 - If someone says "call X" or "email X", that's a task
 - Be specific and actionable
 - Default priority is "Medium" unless urgency is clear
-- Match responsible_person to a team member name when possible${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Completed".' : ''}
+- Only fill assign_to_name when the text explicitly says "assign to [name]". The task creator is the default assignee.${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Completed".' : ''}
 
-Team members (match responsible_person to one of these names when possible): ${teamNames}
+Team members (match assign_to_name to one of these names when possible): ${teamNames}
 
 ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
       file_urls: hasImage ? [image_url] : undefined,
@@ -79,7 +79,7 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
               properties: {
                 name: { type: 'string' },
                 client_id: { type: 'string' },
-                responsible_person: { type: 'string' },
+                assign_to_name: { type: 'string' },
                 priority: { type: 'string' },
                 due_date: { type: 'string' },
                 notes: { type: 'string' },
@@ -115,7 +115,7 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
         }
       }
 
-      const assignee = matchUser(task.responsible_person, users);
+      const assignee = matchUser(task.assign_to_name, users);
       const newTask = await base44.entities.Task.create({
         name: task.name,
         client_id: clientId,
