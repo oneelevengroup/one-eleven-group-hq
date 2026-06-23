@@ -6,6 +6,7 @@ import ResponsibilityForm from '@/components/responsibilities/ResponsibilityForm
 import ResponsibilityBoardCard from '@/components/responsibilities/ResponsibilityBoardCard';
 import { Button } from '@/components/ui/button';
 import { getDisplayName } from '@/lib/utils';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 // Week runs Monday-Sunday, resets Monday 00:00 America/New_York. Deadline Friday 5:00pm ET.
 const getETInfo = (date = new Date()) => {
@@ -42,16 +43,24 @@ export default function Responsibilities() {
   const isDone = (r) => r.completed_week === currentWeek;
 
   const loadData = async () => {
-    const [respList, clientList, userList] = await Promise.all([
-      base44.entities.OngoingResponsibility.list('-created_date'),
-      base44.entities.Client.list(),
-      base44.entities.User.list(),
-    ]);
-    setItems(respList.map(r => ({ ...r, doneThisWeek: isDone(r) })));
-    setClients(clientList);
-    setUsers(userList);
-    if (user?.id) setFullUser(userList.find(u => u.id === user.id) || null);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.OngoingResponsibility.list('-created_date'),
+        base44.entities.Client.list(),
+        getTeamMembers(),
+      ]);
+      const respList = results[0].status === 'fulfilled' ? results[0].value : [];
+      const clientList = results[1].status === 'fulfilled' ? results[1].value : [];
+      const userList = results[2].status === 'fulfilled' ? results[2].value : [];
+      setItems(respList.map(r => ({ ...r, doneThisWeek: isDone(r) })));
+      setClients(clientList);
+      setUsers(userList);
+      if (user?.id) setFullUser(userList.find(u => u.id === user.id) || null);
+    } catch (err) {
+      console.error('Responsibilities load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadData(); }, []);

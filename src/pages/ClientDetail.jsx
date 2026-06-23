@@ -9,6 +9,7 @@ import TaskCard from '@/components/tasks/TaskCard';
 import TaskForm from '@/components/tasks/TaskForm';
 import TaskDetail from '@/components/tasks/TaskDetail';
 import ClientForm from '@/components/clients/ClientForm';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function ClientDetail() {
   const { id } = useParams();
@@ -23,17 +24,25 @@ export default function ClientDetail() {
   const [selectedTask, setSelectedTask] = useState(null);
 
   const loadData = async () => {
-    const [clientList, taskList, userList] = await Promise.all([
-      base44.entities.Client.list(),
-      base44.entities.Task.list('-created_date'),
-      base44.entities.User.list(),
-    ]);
-    const found = clientList.find(c => c.id === id) || null;
-    setClient(found);
-    setTasks(taskList.filter(t => t.client_id === id));
-    setClients(clientList);
-    setUsers(userList);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.Client.list(),
+        base44.entities.Task.list('-created_date'),
+        getTeamMembers(),
+      ]);
+      const clientList = results[0].status === 'fulfilled' ? results[0].value : [];
+      const taskList = results[1].status === 'fulfilled' ? results[1].value : [];
+      const userList = results[2].status === 'fulfilled' ? results[2].value : [];
+      const found = clientList.find(c => c.id === id) || null;
+      setClient(found);
+      setTasks(taskList.filter(t => t.client_id === id));
+      setClients(clientList);
+      setUsers(userList);
+    } catch (err) {
+      console.error('ClientDetail load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadData(); }, [id]);

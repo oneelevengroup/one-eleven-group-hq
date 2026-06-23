@@ -5,6 +5,7 @@ import MessageBubble from '@/components/messaging/MessageBubble';
 import MessageInput from '@/components/messaging/MessageInput';
 import { Hash, Lock } from 'lucide-react';
 import { getDisplayName } from '@/lib/utils';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -41,15 +42,20 @@ export default function Messages() {
   };
 
   const loadData = async () => {
-    const [user, allConversations, allUsers] = await Promise.all([
-      base44.auth.me(),
-      base44.entities.Conversation.list(),
-      base44.entities.User.list(),
-    ]);
-    setCurrentUser(user);
-    setUsers(allUsers);
-    setConversations(allConversations);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.auth.me(),
+        base44.entities.Conversation.list(),
+        getTeamMembers(),
+      ]);
+      if (results[0].status === 'fulfilled') setCurrentUser(results[0].value);
+      if (results[1].status === 'fulfilled') setConversations(results[1].value);
+      if (results[2].status === 'fulfilled') setUsers(results[2].value);
+    } catch (err) {
+      console.error('Messages load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadMessages = async (conversationId) => {

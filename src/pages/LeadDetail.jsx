@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { getDisplayName } from '@/lib/utils';
 import TouchpointForm from '@/components/leads/TouchpointForm';
 import LeadForm from '@/components/leads/LeadForm';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 const STATUS_COLORS = {
   'New': 'bg-purple-500/10 text-purple-400',
@@ -27,16 +28,24 @@ export default function LeadDetail() {
   const [savingNotes, setSavingNotes] = useState(false);
 
   const loadData = async () => {
-    const [leadList, tpList, userList] = await Promise.all([
-      base44.entities.Lead.filter(),
-      base44.entities.Touchpoint.filter({lead_id: id}, '-date'),
-      base44.entities.User.list(),
-    ]);
-    const found = leadList.find(l => l.id === id) || null;
-    setLead(found);
-    setTouchpoints(tpList);
-    setUsers(userList);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.Lead.filter(),
+        base44.entities.Touchpoint.filter({lead_id: id}, '-date'),
+        getTeamMembers(),
+      ]);
+      const leadList = results[0].status === 'fulfilled' ? results[0].value : [];
+      const tpList = results[1].status === 'fulfilled' ? results[1].value : [];
+      const userList = results[2].status === 'fulfilled' ? results[2].value : [];
+      const found = leadList.find(l => l.id === id) || null;
+      setLead(found);
+      setTouchpoints(tpList);
+      setUsers(userList);
+    } catch (err) {
+      console.error('LeadDetail load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadData(); }, [id]);

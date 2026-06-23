@@ -32,9 +32,14 @@ export default function BrightIdeas() {
   const [editText, setEditText] = useState('');
 
   const loadIdeas = async () => {
-    const list = await base44.entities.BrightIdea.list('-created_date');
-    setIdeas(list);
-    setLoading(false);
+    try {
+      const list = await base44.entities.BrightIdea.list('-created_date');
+      setIdeas(list);
+    } catch (err) {
+      console.error('BrightIdeas load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadIdeas(); }, []);

@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Calendar, Plus, Send, Users, Zap, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getDisplayName } from '@/lib/utils';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 import { format } from 'date-fns';
 
 export default function TeamMeetings() {
@@ -22,32 +23,42 @@ export default function TeamMeetings() {
   const [newMeetingDate, setNewMeetingDate] = useState('');
 
   const loadData = async () => {
-    const [meetingList, userList] = await Promise.all([
-      base44.entities.TeamMeeting.list('-date'),
-      base44.entities.User.list(),
-    ]);
-    setMeetings(meetingList);
-    setUsers(userList);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.TeamMeeting.list('-date'),
+        getTeamMembers(),
+      ]);
+      const meetingList = results[0].status === 'fulfilled' ? results[0].value : [];
+      const userList = results[1].status === 'fulfilled' ? results[1].value : [];
+      setMeetings(meetingList);
+      setUsers(userList);
 
-    const active = meetingList.length > 0 ? meetingList[0] : null;
-    setActiveMeeting(active);
+      const active = meetingList.length > 0 ? meetingList[0] : null;
+      setActiveMeeting(active);
 
-    if (active) {
-      const subs = await base44.entities.MeetingSubmission.filter({ meeting_id: active.id });
-      setSubmissions(subs);
-      const mySub = subs.find(s => s.user_id === user.id);
-      if (mySub) {
-        setHotTopics(mySub.hot_topics || '');
-        setWeeklyWin(mySub.weekly_win || '');
-        setEditingSubmission(mySub);
-      } else {
-        setHotTopics('');
-        setWeeklyWin('');
-        setEditingSubmission(null);
+      if (active) {
+        try {
+          const subs = await base44.entities.MeetingSubmission.filter({ meeting_id: active.id });
+          setSubmissions(subs);
+          const mySub = subs.find(s => s.user_id === user.id);
+          if (mySub) {
+            setHotTopics(mySub.hot_topics || '');
+            setWeeklyWin(mySub.weekly_win || '');
+            setEditingSubmission(mySub);
+          } else {
+            setHotTopics('');
+            setWeeklyWin('');
+            setEditingSubmission(null);
+          }
+        } catch (err) {
+          console.error('Submissions load error:', err);
+        }
       }
+    } catch (err) {
+      console.error('TeamMeetings load error:', err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);

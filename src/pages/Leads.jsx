@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LeadCard from '@/components/leads/LeadCard';
 import LeadForm from '@/components/leads/LeadForm';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 const STATUSES = ['New', 'Proposal Sent', 'Contract Sent', 'Cold'];
 
@@ -17,13 +18,18 @@ export default function Leads() {
   const [activeFilter, setActiveFilter] = useState('All');
 
   const loadData = async () => {
-    const [leadList, userList] = await Promise.all([
-      base44.entities.Lead.list('-created_date'),
-      base44.entities.User.list(),
-    ]);
-    setLeads(leadList);
-    setUsers(userList);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.Lead.list('-created_date'),
+        getTeamMembers(),
+      ]);
+      setLeads(results[0].status === 'fulfilled' ? results[0].value : []);
+      setUsers(results[1].status === 'fulfilled' ? results[1].value : []);
+    } catch (err) {
+      console.error('Leads load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadData(); }, []);

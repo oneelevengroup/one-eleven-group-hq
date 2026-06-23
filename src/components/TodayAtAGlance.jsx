@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { CalendarDays, CheckCircle2, AlertCircle, Clock, ListTodo, CalendarPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 const STATUS_DOT = {
   'URGENT': 'bg-red-400',
@@ -36,7 +37,7 @@ export default function TodayAtAGlance({ tasks, user }) {
   useEffect(() => {
     const loadEmbed = async () => {
       try {
-        const userList = await base44.entities.User.list();
+        const userList = await getTeamMembers();
         const me = userList.find(u => u.id === user?.id);
         setEmbedSrc(me?.calendar_embed_src || null);
       } catch {

@@ -7,6 +7,7 @@ import BrainDump from '@/components/BrainDump';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskDetail from '@/components/tasks/TaskDetail';
 import { Button } from '@/components/ui/button';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function MyWork() {
   const { user } = useAuth();
@@ -20,19 +21,27 @@ export default function MyWork() {
   const [statusFilter, setStatusFilter] = useState('URGENT');
 
   const loadData = async () => {
-    const [taskList, clientList, userList] = await Promise.all([
-      base44.entities.Task.list('-created_date'),
-      base44.entities.Client.list(),
-      base44.entities.User.list(),
-    ]);
-    setTasks(taskList);
-    setClients(clientList);
-    setUsers(userList);
-    if (user?.id) {
-      const entityUser = userList.find(u => u.id === user.id);
-      setFullUser(entityUser || null);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.Task.list('-created_date'),
+        base44.entities.Client.list(),
+        getTeamMembers(),
+      ]);
+      const taskList = results[0].status === 'fulfilled' ? results[0].value : [];
+      const clientList = results[1].status === 'fulfilled' ? results[1].value : [];
+      const userList = results[2].status === 'fulfilled' ? results[2].value : [];
+      setTasks(taskList);
+      setClients(clientList);
+      setUsers(userList);
+      if (user?.id) {
+        const entityUser = userList.find(u => u.id === user.id);
+        setFullUser(entityUser || null);
+      }
+    } catch (err) {
+      console.error('MyWork load error:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);

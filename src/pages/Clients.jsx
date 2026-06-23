@@ -4,6 +4,7 @@ import { Plus, ChevronRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ClientForm from '@/components/clients/ClientForm';
+import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
@@ -14,15 +15,20 @@ export default function Clients() {
   const [editingClient, setEditingClient] = useState(null);
 
   const loadData = async () => {
-    const [clientList, taskList, userList] = await Promise.all([
-      base44.entities.Client.list(),
-      base44.entities.Task.list(),
-      base44.entities.User.list(),
-    ]);
-    setClients(clientList);
-    setTasks(taskList);
-    setUsers(userList);
-    setLoading(false);
+    try {
+      const results = await Promise.allSettled([
+        base44.entities.Client.list(),
+        base44.entities.Task.list(),
+        getTeamMembers(),
+      ]);
+      setClients(results[0].status === 'fulfilled' ? results[0].value : []);
+      setTasks(results[1].status === 'fulfilled' ? results[1].value : []);
+      setUsers(results[2].status === 'fulfilled' ? results[2].value : []);
+    } catch (err) {
+      console.error('Clients load error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { loadData(); }, []);
