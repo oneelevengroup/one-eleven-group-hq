@@ -1,5 +1,27 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
+function matchUser(name, users) {
+  if (!name) return null;
+  const n = String(name).toLowerCase().trim().replace(/^@/, '');
+  if (!n) return null;
+  let match = users.find(u =>
+    (u.display_name || '').toLowerCase() === n || (u.full_name || '').toLowerCase() === n
+  );
+  if (match) return match;
+  match = users.find(u => {
+    const dn = (u.display_name || '').toLowerCase();
+    const fn = (u.full_name || '').toLowerCase();
+    return dn.split(' ')[0] === n || fn.split(' ')[0] === n;
+  });
+  if (match) return match;
+  match = users.find(u => {
+    const dn = (u.display_name || '').toLowerCase();
+    const fn = (u.full_name || '').toLowerCase();
+    return (dn && (dn.includes(n) || n.includes(dn))) || (fn && (fn.includes(n) || n.includes(fn)));
+  });
+  return match || null;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -11,9 +33,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No text or image provided' }, { status: 400 });
     }
 
-    // Get existing clients for matching
-    const clients = await base44.entities.Client.list();
+    // Get existing clients and team roster for matching
+    const [clients, users] = await Promise.all([
+      base44.entities.Client.list(),
+      base44.asServiceRole.entities.User.list(),
+    ]);
     const clientNames = clients.map(c => c.name);
+    const teamNames = users.map(u => u.display_name || u.full_name).filter(Boolean).join(', ');
 
     const hasImage = !!image_url;
 
@@ -26,6 +52,7 @@ Available clients: ${JSON.stringify(clientNames)}
 For each task, extract:
 - name: a clear, concise task name
 - client_id: if the task mentions a specific client, match it to one from the available clients list (exact name match). Leave as null if no client is mentioned.
+- responsible_person: the name of the person who is responsible for doing this task — the person who is named or implied as the one who should do it (e.g. "Maddie follow up with Tyson" → responsible_person is "Maddie"). Leave as empty string if no specific person is named.
 - priority: "Low", "Medium", "High", or "Urgent" based on urgency cues in the text
 - due_date: if a date or timeframe is mentioned, return as YYYY-MM-DD (use 2026 as current year if no year specified). Use null if not mentioned.
 - notes: any additional details or context
@@ -35,7 +62,10 @@ Rules:
 - Break multi-step items into separate tasks
 - If someone says "call X" or "email X", that's a task
 - Be specific and actionable
-- Default priority is "Medium" unless urgency is clear${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Completed".' : ''}
+- Default priority is "Medium" unless urgency is clear
+- Match responsible_person to a team member name when possible${hasImage ? '\n- If the image contains a handwritten list, extract every line item as a separate task\n- IMPORTANT: Look carefully for checkmarks (✓, ✔), strikethroughs, crossed-out text, or any visual indication that a task is completed. Mark those as "Completed".' : ''}
+
+Team members (match responsible_person to one of these names when possible): ${teamNames}
 
 ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
       file_urls: hasImage ? [image_url] : undefined,
@@ -49,6 +79,7 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
               properties: {
                 name: { type: 'string' },
                 client_id: { type: 'string' },
+                responsible_person: { type: 'string' },
                 priority: { type: 'string' },
                 due_date: { type: 'string' },
                 notes: { type: 'string' },
@@ -84,10 +115,11 @@ ${hasImage ? 'The photo is attached below.' : `Brain dump:\n"${text}"`}`,
         }
       }
 
+      const assignee = matchUser(task.responsible_person, users);
       const newTask = await base44.entities.Task.create({
         name: task.name,
         client_id: clientId,
-        assigned_to: user.id,
+        assigned_to: assignee?.id || user.id,
         assigned_by: user.id,
         priority: task.priority || 'Medium',
         status: task.status || 'To Do',
