@@ -62,22 +62,51 @@ export default function Clients() {
           <p className="text-muted-foreground">No clients yet. Add your first client to get started!</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {clients.map(client => {
-            const counts = getTaskCount(client.id);
-            return (
-              <Link key={client.id} to={`/clients/${client.id}`} className="flex items-center gap-4 bg-card rounded-xl border border-border px-5 py-4 hover:border-accent/50 transition-colors group">
-                {client.color_tag && <span className="w-4 h-4 rounded-full flex-shrink-0" style={{backgroundColor: client.color_tag}} />}
-                <h3 className="font-heading font-bold text-foreground text-base flex-1">{client.name}</h3>
-                <SocialPlatforms platforms={client.social_platforms} size="w-4 h-4" />
-                <div className="flex items-center gap-3 text-sm flex-shrink-0">
-                  <span className="text-muted-foreground">{counts.total} task{counts.total !== 1 ? 's' : ''}</span>
-                  {counts.open > 0 && <span className="text-accent font-semibold">{counts.open} open</span>}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {(() => {
+            const renderClient = (client) => {
+              const counts = getTaskCount(client.id);
+              return (
+                <Link key={client.id} to={`/clients/${client.id}`} className="flex items-center gap-4 bg-card rounded-xl border border-border px-5 py-4 hover:border-accent/50 transition-colors group">
+                  {client.color_tag && <span className="w-4 h-4 rounded-full flex-shrink-0" style={{backgroundColor: client.color_tag}} />}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-heading font-bold text-foreground text-base truncate">{client.name}</h3>
+                    {client.industry && <p className="text-xs text-muted-foreground truncate">{client.industry}</p>}
+                  </div>
+                  <SocialPlatforms platforms={client.social_platforms} size="w-4 h-4" />
+                  <div className="flex items-center gap-3 text-sm flex-shrink-0">
+                    <span className="text-muted-foreground">{counts.total} task{counts.total !== 1 ? 's' : ''}</span>
+                    {counts.open > 0 && <span className="text-accent font-semibold">{counts.open} open</span>}
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                </Link>
+              );
+            };
+            const renderColumn = (title, list) => (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <h2 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">{title}</h2>
+                  <span className="text-xs text-muted-foreground">({list.length})</span>
+                  <div className="flex-1 h-px bg-border ml-1" />
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-              </Link>
+                <div className="space-y-2">
+                  {list.map(renderClient)}
+                </div>
+              </div>
             );
-          })}
+            const retainerClients = clients.filter(c => c.client_type === 'Retainer');
+            const alacarteClients = clients.filter(c => c.client_type === 'A La Carte Project');
+            const uncategorized = clients.filter(c => !c.client_type);
+            return (
+              <>
+                <div className="space-y-6">
+                  {renderColumn('Retainer Clients', retainerClients)}
+                  {uncategorized.length > 0 && renderColumn('Uncategorized', uncategorized)}
+                </div>
+                {renderColumn('A La Carte / Project Clients', alacarteClients)}
+              </>
+            );
+          })()}
         </div>
       )}
 

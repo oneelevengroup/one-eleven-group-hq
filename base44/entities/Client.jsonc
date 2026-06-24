@@ -5,6 +5,14 @@
     "name": {
       "type": "string"
     },
+    "client_type": {
+      "type": "string",
+      "enum": [
+        "Retainer",
+        "A La Carte Project"
+      ],
+      "default": "Retainer"
+    },
     "industry": {
       "type": "string"
     },

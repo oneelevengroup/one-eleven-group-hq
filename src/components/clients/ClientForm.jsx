@@ -28,6 +28,7 @@ const SCOPE_OPTIONS = [
 export default function ClientForm({ client, users, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: client?.name || '',
+    client_type: client?.client_type || 'Retainer',
     industry: client?.industry || '',
     contact_info: client?.contact_info || '',
     point_of_contact: client?.point_of_contact || '',
@@ -118,9 +119,18 @@ export default function ClientForm({ client, users, onClose, onSaved }) {
             <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" placeholder="Company or client name" />
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1.5">Industry</label>
-            <input value={form.industry} onChange={e => setForm({...form, industry: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" placeholder="e.g. Beauty &amp; Salon, Beverage / CPG, Law Firm" />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium text-foreground block mb-1.5">Client Type</label>
+              <select value={form.client_type} onChange={e => setForm({...form, client_type: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50">
+                <option value="Retainer">Retainer</option>
+                <option value="A La Carte Project">A La Carte Project</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground block mb-1.5">Industry</label>
+              <input value={form.industry} onChange={e => setForm({...form, industry: e.target.value})} className="w-full bg-muted border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50" placeholder="e.g. Beauty &amp; Salon" />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
