@@ -159,10 +159,43 @@ export default function ClientDetail() {
           <p className="text-muted-foreground">No tasks for this client yet. Create one above.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {tasks.map(task => (
-            <TaskCard key={task.id} task={task} client={getClientObj(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
-          ))}
+        <div className="space-y-6">
+          {(() => {
+            const openTasks = tasks.filter(t => t.status !== 'Completed');
+            const completedTasks = tasks.filter(t => t.status === 'Completed');
+            return (
+              <>
+                {openTasks.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">Open Tasks</h3>
+                      <span className="text-xs text-muted-foreground">({openTasks.length})</span>
+                      <div className="flex-1 h-px bg-border ml-1" />
+                    </div>
+                    <div className="space-y-2">
+                      {openTasks.map(task => (
+                        <TaskCard key={task.id} task={task} client={getClientObj(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {completedTasks.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wide">Completed Tasks</h3>
+                      <span className="text-xs text-muted-foreground">({completedTasks.length})</span>
+                      <div className="flex-1 h-px bg-border ml-1" />
+                    </div>
+                    <div className="space-y-2">
+                      {completedTasks.map(task => (
+                        <TaskCard key={task.id} task={task} client={getClientObj(task.client_id)} assignee={users.find(u => u.id === task.assigned_to)} onClick={() => setSelectedTask(task)} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
 
