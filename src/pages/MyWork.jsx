@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Plus, Filter } from 'lucide-react';
+import { Plus, Filter, Users2 } from 'lucide-react';
 import TaskForm from '@/components/tasks/TaskForm';
 import BrainDump from '@/components/BrainDump';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskDetail from '@/components/tasks/TaskDetail';
 import { Button } from '@/components/ui/button';
+import { getDisplayName } from '@/lib/utils';
 import { getTeamMembers } from '@/lib/getTeamMembers';
 
 export default function MyWork() {
@@ -47,6 +48,7 @@ export default function MyWork() {
   useEffect(() => { loadData(); }, []);
 
   const myTasks = tasks.filter(t => t.assigned_to === user?.id);
+  const delegatedTasks = tasks.filter(t => t.assigned_by === user?.id && t.assigned_to && t.assigned_to !== user?.id);
   const calendarEmbedSrc = fullUser?.calendar_embed_src || null;
   const isUrgent = (t) => (t.status === 'URGENT' || t.priority === 'Urgent') && t.status !== 'Completed';
   const filteredTasks = statusFilter === 'all'
@@ -135,6 +137,47 @@ export default function MyWork() {
               </div>
             ));
           })()}
+        </div>
+      )}
+
+      {delegatedTasks.length > 0 && (
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-3">
+            <Users2 className="w-5 h-5 text-accent" />
+            <h2 className="text-lg font-heading font-bold text-foreground">Delegated</h2>
+            <span className="text-xs text-muted-foreground">({delegatedTasks.length})</span>
+          </div>
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-muted-foreground uppercase tracking-wide">Task</th>
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-muted-foreground uppercase tracking-wide">Assigned To</th>
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-muted-foreground uppercase tracking-wide">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {delegatedTasks.map(task => {
+                    const assignee = users.find(u => u.id === task.assigned_to);
+                    return (
+                      <tr key={task.id} className="border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => setSelectedTask(task)}>
+                        <td className="px-4 py-2.5">
+                          <span className="text-sm font-medium text-foreground">{task.name}</span>
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <span className="text-sm text-muted-foreground">{assignee ? getDisplayName(assignee) : '—'}</span>
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <span className="text-xs font-medium text-muted-foreground">{task.status}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
 
