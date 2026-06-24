@@ -26,6 +26,7 @@ import Messages from '@/pages/Messages';
 import BrightIdeas from '@/pages/BrightIdeas';
 import Responsibilities from '@/pages/Responsibilities';
 import ContentUpload from '@/pages/ContentUpload';
+import PRDeals from '@/pages/PRDeals';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
           <Route path="/bright-ideas" element={<BrightIdeas />} />
           <Route path="/responsibilities" element={<Responsibilities />} />
           <Route path="/content-upload" element={<ContentUpload />} />
+          <Route path="/pr-deals" element={<PRDeals />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>

@@ -22,6 +22,7 @@ const SCOPE_OPTIONS = [
   'Digital Ads',
   'Brand Design + Development',
   'A-La-Carte Project',
+  'PR/Brand Outreach',
 ];
 
 export default function ClientForm({ client, users, onClose, onSaved }) {

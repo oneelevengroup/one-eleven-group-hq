@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut, Repeat, UploadCloud } from 'lucide-react';
+import { LayoutDashboard, UserCheck, Building2, Target, Users, Settings, Sun, Moon, MessageSquare, Lightbulb, LogOut, Repeat, UploadCloud, Gift } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
 import { base44 } from '@/api/base44Client';
 import { useNotifications } from '@/lib/useNotifications';
+import { useAuth } from '@/lib/AuthContext';
 
 const navItems = [
   { label: 'The Motherboard', path: '/', icon: LayoutDashboard },
@@ -14,6 +15,7 @@ const navItems = [
   { label: 'Clients', path: '/clients', icon: Building2 },
   { label: 'Bright Ideas', path: '/bright-ideas', icon: Lightbulb },
   { label: 'Content Upload', path: '/content-upload', icon: UploadCloud },
+  { label: 'PR / Brand Deals', path: '/pr-deals', icon: Gift, requiresPrAccess: true },
   { label: 'Team Meetings', path: '/team-meetings', icon: Users },
 ];
 
@@ -21,7 +23,10 @@ export default function Sidebar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { unreadCount } = useNotifications();
+  const { user } = useAuth();
   const handleLogout = () => base44.auth.logout('/login');
+
+  const visibleNavItems = navItems.filter(item => !item.requiresPrAccess || user?.pr_access === true);
 
   return (
     <aside className="w-60 h-screen bg-sidebar flex flex-col fixed left-0 top-0 z-30">
@@ -36,7 +41,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 px-2.5 space-y-0.5 overflow-y-auto">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const Icon = item.icon;
           const active = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
           return (

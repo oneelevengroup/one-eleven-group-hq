@@ -1,0 +1,57 @@
+{
+  "name": "PRDeal",
+  "type": "object",
+  "properties": {
+    "brand_company": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "deal_type": {
+      "type": "string",
+      "enum": [
+        "Gifted",
+        "Paid",
+        "UGC",
+        "Affiliate"
+      ],
+      "default": "Gifted"
+    },
+    "value": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pitched",
+        "In talks",
+        "Confirmed",
+        "Delivered",
+        "Paid"
+      ],
+      "default": "Pitched"
+    },
+    "date_pitched": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_due": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_posted": {
+      "type": "string",
+      "format": "date"
+    },
+    "deliverables": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "brand_company"
+  ]
+}

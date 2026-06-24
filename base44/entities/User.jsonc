@@ -44,6 +44,10 @@
     },
     "calendar_embed_src": {
       "type": "string"
+    },
+    "pr_access": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
