@@ -1,0 +1,37 @@
+{
+  "name": "ContentSession",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "upload_status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "In Progress",
+        "Uploaded"
+      ],
+      "default": "Pending"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "upload_email_sent": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "client_id",
+    "session_date",
+    "upload_status"
+  ]
+}
