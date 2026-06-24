@@ -32,6 +32,12 @@ const ICONS = {
   Substack: ({ className }) => (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M22.54 6.62V4.5H1.46v2.12h21.08zM1.46 9.29v2.12h21.08V9.29H1.46zm0 4.71V24l10.54-5.56L22.54 24V14H1.46zm0-2.71h21.08V9.17H1.46v2.12z"/></svg>
   ),
+  Pinterest: ({ className }) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.64 7.85 6.36 9.31-.09-.79-.17-2 .03-2.87.19-.81 1.22-5.16 1.22-5.16s-.31-.62-.31-1.54c0-1.44.84-2.52 1.88-2.52.89 0 1.32.67 1.32 1.47 0 .9-.57 2.24-.87 3.49-.25 1.04.52 1.89 1.55 1.89 1.86 0 3.29-1.96 3.29-4.78 0-2.5-1.8-4.25-4.37-4.25-2.98 0-4.73 2.23-4.73 4.54 0 .9.35 1.86.78 2.39.08.1.1.19.07.29-.08.34-.26 1.04-.3 1.18-.05.2-.16.24-.36.15-1.34-.62-2.18-2.58-2.18-4.16 0-3.39 2.46-6.5 7.1-6.5 3.73 0 6.62 2.66 6.62 6.22 0 3.71-2.34 6.69-5.59 6.69-1.09 0-2.12-.57-2.47-1.24l-.67 2.56c-.24.93-.9 2.09-1.34 2.8.97.3 2 .46 3.07.46 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+  ),
+  'Google My Business': ({ className }) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5.5 13.5h-11v-7h11v7z"/><path d="M7.5 9.5h9v1h-9zM7.5 11.5h9v1h-9zM7.5 13.5h9v1h-9z" opacity="0.5"/></svg>
+  ),
 };
 
 export const PLATFORM_OPTIONS = [
@@ -45,6 +51,8 @@ export const PLATFORM_OPTIONS = [
   'YouTube Short Form',
   'TikTok',
   'Substack',
+  'Pinterest',
+  'Google My Business',
 ];
 
 // Compact icon row — used on client list, detail, etc.

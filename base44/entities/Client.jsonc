@@ -5,6 +5,9 @@
     "name": {
       "type": "string"
     },
+    "industry": {
+      "type": "string"
+    },
     "contact_info": {
       "type": "string"
     },
@@ -49,7 +52,9 @@
           "YouTube Long Form",
           "YouTube Short Form",
           "TikTok",
-          "Substack"
+          "Substack",
+          "Pinterest",
+          "Google My Business"
         ]
       },
       "default": []

@@ -76,6 +76,12 @@ export default function ClientDetail() {
             {client.color_tag && <span className="w-4 h-4 rounded-full" style={{backgroundColor: client.color_tag}} />}
             <h1 className="text-3xl font-heading font-extrabold text-foreground">{client.name}</h1>
           </div>
+          {client.industry && (
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full mt-2">
+              <Briefcase className="w-3.5 h-3.5" />
+              {client.industry}
+            </span>
+          )}
         </div>
         <Button variant="outline" onClick={() => setShowEditClient(true)} className="border-border">Edit</Button>
         <Button onClick={() => setShowTaskForm(true)} className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"><Plus className="w-4 h-4 mr-2" /> New Task</Button>
