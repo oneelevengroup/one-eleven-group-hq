@@ -1,0 +1,37 @@
+{
+  "name": "Content Upload Email Notification",
+  "description": "Triggers notifyContentUploaded when a ContentSession's upload_status changes to Uploaded, sending an email to Karlee Evans.",
+  "trigger": {
+    "condition": "${ ((.trigger.changed_fields | index(\"upload_status\") != null) and (.trigger.data.upload_status == \"Uploaded\")) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "ContentSession"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "content_upload_email_notification",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyContentUploaded",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "notifyContentUploaded"
+  }
+}
